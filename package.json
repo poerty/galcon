@@ -1,0 +1,34 @@
+{
+  "name": "galcon",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "immutable": "^4.0.0-rc.12",
+    "normalize.css": "^8.0.1",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-immutable-proptypes": "^2.1.0",
+    "react-redux": "^6.0.1",
+    "react-scripts": "2.1.5",
+    "react-transition-group": "^2.6.0",
+    "redux": "^4.0.1",
+    "typescript": "^3.3.3333",
+    "uuidv4": "^3.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
