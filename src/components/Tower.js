@@ -28,6 +28,7 @@ class Tower extends Component {
       padding: '3px',
       borderRadius: '50%',
       position: 'absolute',
+      transform: 'translate(-50%, -50%)',
       ...towerStyle.toJS(),
     };
     return (

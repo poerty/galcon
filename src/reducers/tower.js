@@ -32,6 +32,9 @@ const selectToTower = (state, action) => {
   if (!toTowerStyle || !fromTowerStyle || !attackPercentage) {
     return state;
   }
+  if (toTowerId === fromTowerId) {
+    return state;
+  }
 
   const attackAmount = Math.floor(state.getIn(['byId', fromTowerId, 'amount']) * attackPercentage);
   const attackId = uuidv4();
