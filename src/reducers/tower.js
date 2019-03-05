@@ -52,6 +52,17 @@ const selectToTower = (state, action) => {
 
   return state
     .setIn(['selected'], Map({ percentage: 1.0 }))
+    .updateIn(['byId', fromTowerId, 'realAmount'],
+      realAmount => {
+        const newRealAmount = Math.max(
+          0,
+          realAmount - callRatio * attackAmount
+        );
+        return newRealAmount;
+      }
+    )
+    .setIn(['byId', fromTowerId, 'amount'],
+      Math.floor(state.getIn(['byId', fromTowerId, 'realAmount']) / callRatio))
     .updateIn(['attacks', 'ids'], ids => ids.push(attackId))
     .setIn(['attacks', 'byId', attackId], attack);
 };
