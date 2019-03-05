@@ -15,7 +15,6 @@ class Board extends Component {
       position: 'absolute',
       top: '0px',
     };
-    console.log('attackIds: ', attackIds);
     return (
       <div style={style}>
         {towerIds.map(towerId => (

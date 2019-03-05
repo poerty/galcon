@@ -14,6 +14,22 @@ export function selectToTower(towerId) {
   };
 }
 
+export const MARINE_ARRIVE_TOWER = 'MARINE_ARRIVE_TOWER';
+export function marineArriveTower(attackId) {
+  return {
+    type: MARINE_ARRIVE_TOWER,
+    attackId,
+  };
+}
+
+export const ATTACK_END = 'ATTACK_END';
+export function attackEnd(attackId) {
+  return {
+    type: ATTACK_END,
+    attackId,
+  };
+}
+
 export const UPGRADE_TOWER = 'UPGRADE_TOWER';
 export function upgradeTower(towerId) {
   return {

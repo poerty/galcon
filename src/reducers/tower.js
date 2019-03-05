@@ -49,12 +49,38 @@ const selectToTower = (state, action) => {
     }),
     at: (new Date()).getTime() / 1000,
   });
-  console.log('attack: ', attack.toJS());
 
   return state
     .setIn(['selected'], Map({ percentage: 1.0 }))
     .updateIn(['attacks', 'ids'], ids => ids.push(attackId))
     .setIn(['attacks', 'byId', attackId], attack);
+};
+
+const marineArriveTower = (state, action) => {
+  const attackId = action.attackId;
+  const towerId = state.getIn(['attacks', 'byId', attackId, 'to', 'towerId']);
+
+  return state
+    .updateIn(['byId', towerId, 'realAmount'],
+      realAmount => {
+        const newRealAmount = Math.max(
+          0,
+          realAmount - callRatio * 1
+        );
+        return newRealAmount;
+      }
+    )
+    .setIn(['byId', towerId, 'amount'],
+      Math.floor(state.getIn(['byId', towerId, 'realAmount']) / callRatio));
+};
+
+const attackEnd = (state, action) => {
+  const attackId = action.attackId;
+
+  const newState = state
+    .deleteIn(['attacks', 'byId', attackId])
+    .updateIn(['attacks', 'ids'], ids => ids.filter(id => id !== attackId));
+  return newState;
 };
 
 const upgradeTower = (state, action) => {
@@ -107,6 +133,10 @@ const towerReducer = (state = initialState, action) => {
       return selectFromTower(state, action);
     case ActionTypes.SELECT_TO_TOWER:
       return selectToTower(state, action);
+    case ActionTypes.MARINE_ARRIVE_TOWER:
+      return marineArriveTower(state, action);
+    case ActionTypes.ATTACK_END:
+      return attackEnd(state, action);
     case ActionTypes.UPGRADE_TOWER:
       return upgradeTower(state, action);
 
