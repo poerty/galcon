@@ -65,24 +65,10 @@ class Attack extends Component {
     const pathId = `${id}-path`;
     const amount = attack.get('amount');
 
-    const attackStyle = {
-      width: '100%',
-      height: '100%',
-    };
-    const svgStyle = {
-      width: '100%',
-      height: '100%',
-      display: 'none',
-    };
     // style will fixed
     const style = {
-      position: 'absolute',
       top: attack.getIn(['from', 'top']),
       left: attack.getIn(['from', 'left']),
-      width: '10px', height: '10px',
-      borderRadius: '50%',
-      transform: 'translate(-50%, -50%)',
-      background: 'red',
     };
 
     const marineList = [];
@@ -90,12 +76,12 @@ class Attack extends Component {
       marineList.push(
         <div
           key={`${id}-${i}`} ref={this.divLoad(i, attack.get('to').toJS())}
-          style={style} background='red' />
+          style={style} className='marine' background='red' />
       );
     }
     return (
-      <div className='attack' style={attackStyle}>
-        <svg style={svgStyle}>
+      <div className='attack'>
+        <svg className='attack-svg'>
           <path d={path} stroke='black' id={pathId} ref={this.pathLoad} />
         </svg>
         {marineList}

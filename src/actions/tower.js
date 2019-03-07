@@ -1,16 +1,18 @@
 export const SELECT_FROM_TOWER = 'SELECT_FROM_TOWER';
-export function selectFromTower(towerId) {
+export function selectFromTower(towerId, playerId) {
   return {
     type: SELECT_FROM_TOWER,
     towerId,
+    playerId,
   };
 }
 
 export const SELECT_TO_TOWER = 'SELECT_TO_TOWER';
-export function selectToTower(towerId) {
+export function selectToTower(towerId, playerId) {
   return {
     type: SELECT_TO_TOWER,
     towerId,
+    playerId,
   };
 }
 
@@ -31,10 +33,11 @@ export function attackEnd(attackId) {
 }
 
 export const UPGRADE_TOWER = 'UPGRADE_TOWER';
-export function upgradeTower(towerId) {
+export function upgradeTower(towerId, playerId) {
   return {
     type: UPGRADE_TOWER,
     towerId,
+    playerId,
   };
 }
 

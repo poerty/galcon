@@ -4,6 +4,7 @@ import towerInfos from '../datas/tower';
 import mapInfos from '../datas/map';
 import { Map, List } from 'immutable';
 import uuidv4 from 'uuidv4';
+import math from 'mathjs';
 
 const initialState = mapInfos.map1.towers
   .set('selected', Map({
@@ -19,11 +20,16 @@ const callRatio = process.env.REACT_APP_CALL_RATIO;
 
 const selectFromTower = (state, action) => {
   const towerId = action.towerId;
+  const playerId = action.playerId;
+  if (state.getIn(['byId', towerId, 'ownerId']) !== playerId) {
+    return state;
+  }
 
   return state.setIn(['selected', 'from'], towerId);
 };
 
 const selectToTower = (state, action) => {
+  const playerId = action.playerId;
   const toTowerId = action.towerId;
   const toTowerStyle = state.getIn(['byId', toTowerId, 'style']);
   const fromTowerId = state.getIn(['selected', 'from']);
@@ -42,6 +48,7 @@ const selectToTower = (state, action) => {
     amount: attackAmount,
     from: Map({
       towerId: fromTowerId,
+      playerId,
       top: fromTowerStyle.get('top'),
       left: fromTowerStyle.get('left'),
     }),
@@ -59,33 +66,41 @@ const selectToTower = (state, action) => {
       realAmount => {
         const newRealAmount = Math.max(
           0,
-          realAmount - callRatio * attackAmount
+          math.subtract(realAmount, math.multiply(callRatio, attackAmount))
         );
         return newRealAmount;
       }
     )
     .setIn(['byId', fromTowerId, 'amount'],
-      Math.floor(state.getIn(['byId', fromTowerId, 'realAmount']) / callRatio))
+      math.floor(math.divide(state.getIn(['byId', fromTowerId, 'realAmount']), callRatio)))
     .updateIn(['attacks', 'ids'], ids => ids.push(attackId))
     .setIn(['attacks', 'byId', attackId], attack);
 };
 
 const marineArriveTower = (state, action) => {
   const attackId = action.attackId;
+  const playerId = state.getIn(['attacks', 'byId', attackId, 'from', 'playerId']);
   const towerId = state.getIn(['attacks', 'byId', attackId, 'to', 'towerId']);
 
+  const realAmount = state.getIn(['byId', towerId, 'realAmount']);
+  let newRealAmount;
+  let newOwnerId = state.getIn(['byId', towerId, 'ownerId']);
+  if (newOwnerId === playerId) {
+    newRealAmount = math.add(realAmount, callRatio);
+  }
+  else if (realAmount < callRatio) {
+    // change owner of tower
+    newRealAmount = math.subtract(callRatio, realAmount);
+    newOwnerId = playerId;
+  } else {
+    newRealAmount = math.subtract(realAmount, callRatio);
+  }
+
   return state
-    .updateIn(['byId', towerId, 'realAmount'],
-      realAmount => {
-        const newRealAmount = Math.max(
-          0,
-          realAmount - callRatio * 1
-        );
-        return newRealAmount;
-      }
-    )
+    .setIn(['byId', towerId, 'ownerId'], newOwnerId)
+    .setIn(['byId', towerId, 'realAmount'], newRealAmount)
     .setIn(['byId', towerId, 'amount'],
-      Math.floor(state.getIn(['byId', towerId, 'realAmount']) / callRatio));
+      math.floor(math.divide(state.getIn(['byId', towerId, 'realAmount']), callRatio)));
 };
 
 const attackEnd = (state, action) => {
@@ -111,9 +126,9 @@ const upgradeTower = (state, action) => {
     return state;
   }
   return state
-    .updateIn(['byId', towerId, 'level'], level => level + 1)
-    .updateIn(['byId', towerId, 'amount'], amount => amount - towerInfo.upgradeCost)
-    .updateIn(['byId', towerId, 'realAmount'], realAmount => realAmount - callRatio * towerInfo.upgradeCost);
+    .updateIn(['byId', towerId, 'level'], level => math.add(level, 1))
+    .updateIn(['byId', towerId, 'amount'], amount => math.subtract(amount, towerInfo.upgradeCost))
+    .updateIn(['byId', towerId, 'realAmount'], realAmount => math.subtract(realAmount, math.multiply(callRatio, towerInfo.upgradeCost)));
 };
 
 const addAmount = (state) => {
@@ -128,15 +143,18 @@ const addAmount = (state) => {
           realAmount => {
             const level = state.getIn(['byId', towerId, 'level']);
             const towerInfo = towerInfos[level];
-            const newRealAmount = Math.min(
-              callRatio * towerInfo.max,
-              realAmount + towerInfo.rate
+            const newRealAmount = math.max(
+              realAmount,
+              math.min(
+                math.multiply(callRatio, towerInfo.max),
+                math.add(realAmount, towerInfo.rate)
+              )
             );
             return newRealAmount;
           }
         )
         .setIn(['byId', towerId, 'amount'],
-          Math.floor(state.getIn(['byId', towerId, 'realAmount']) / callRatio));
+          math.floor(math.divide(state.getIn(['byId', towerId, 'realAmount']), callRatio)));
     });
   });
 };

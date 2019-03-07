@@ -8,29 +8,28 @@ import towerData from '../datas/tower';
 
 
 class Tower extends Component {
+  constructor(props) {
+    super(props);
+    const { playerId } = props;
+    this._selectFromTower = () => this.props._selectFromTower(playerId);
+    this._selectToTower = () => this.props._selectToTower(playerId);
+    this._upgradeTower = () => this.props._upgradeTower(playerId);
+  }
 
   render() {
-    const { towerAmount, towerStyle, towerLevel } = this.props;
-    const { _selectFromTower, _selectToTower, _upgradeTower } = this.props;
+    const { playerId, towerOwnerId, towerAmount, towerStyle, towerLevel } = this.props;
+    const { _selectFromTower, _selectToTower, _upgradeTower } = this;
     const towerSize = towerData[towerLevel].size;
     const fontSize = towerData[towerLevel].fontSize;
     const style = {
       width: towerSize,
       height: towerSize,
-      background: 'lightsteelblue',
-      border: '2px solid #666',
-      color: '#666',
-      textAlign: 'center',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
       font: fontSize + 'px Arial, sans-serif',
-      padding: '3px',
-      borderRadius: '50%',
-      position: 'absolute',
-      transform: 'translate(-50%, -50%)',
       ...towerStyle.toJS(),
     };
+    if (playerId === towerOwnerId) {
+      style.backgroundColor = 'lightyellow';
+    }
     return (
       <div className='tower'
         style={style}
@@ -45,6 +44,9 @@ class Tower extends Component {
 }
 
 Tower.propTypes = {
+  playerId: PropTypes.string.isRequired,
+
+  towerOwnerId: PropTypes.string.isRequired,
   towerStyle: ImmutablePropTypes.map.isRequired,
   towerAmount: PropTypes.number.isRequired,
   towerLevel: PropTypes.number.isRequired,
@@ -56,6 +58,9 @@ Tower.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    playerId: state.users.get('playerId'),
+
+    towerOwnerId: state.towers.getIn(['byId', ownProps.id, 'ownerId']),
     towerStyle: state.towers.getIn(['byId', ownProps.id, 'style']),
     towerAmount: state.towers.getIn(['byId', ownProps.id, 'amount']),
     towerLevel: state.towers.getIn(['byId', ownProps.id, 'level']),
@@ -64,9 +69,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    _selectFromTower: () => dispatch(selectFromTower(ownProps.id)),
-    _selectToTower: () => dispatch(selectToTower(ownProps.id)),
-    _upgradeTower: () => dispatch(upgradeTower(ownProps.id)),
+    _selectFromTower: (playerId) => dispatch(selectFromTower(ownProps.id, playerId)),
+    _selectToTower: (playerId) => dispatch(selectToTower(ownProps.id, playerId)),
+    _upgradeTower: (playerId) => dispatch(upgradeTower(ownProps.id, playerId)),
   };
 };
 
