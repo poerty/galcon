@@ -8,10 +8,6 @@ import towerData from '../datas/tower';
 
 
 class Tower extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { towerAmount, towerStyle, towerLevel } = this.props;
     const { _selectAttackFromTower, _selectAttackToTower, _upgradeTower } = this.props;

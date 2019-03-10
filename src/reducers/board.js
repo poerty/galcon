@@ -93,7 +93,6 @@ const upgradeTower = (state, action) => {
 };
 
 
-
 const addTowerAmount = (state) => {
   const towerIds = state.getIn(['towers', 'ids']);
 
@@ -223,7 +222,6 @@ const createMarine = (state) => {
             duration,
           }));
       }
-      // add new marine
     });
   });
 };
