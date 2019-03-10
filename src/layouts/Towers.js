@@ -29,7 +29,7 @@ Towers.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  towerIds: state.towers.get('ids'),
+  towerIds: state.board.getIn(['towers', 'ids']),
 });
 
 export default connect(mapStateToProps)(Towers);

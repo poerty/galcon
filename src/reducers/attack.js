@@ -9,9 +9,6 @@ const initialState = Map({
 });
 
 const startAttack = (state, action) => {
-  console.log('startAttack: ');
-  console.log('state: ', state.toJS());
-
   const attackId = uuidv4();
   const { from, to, amount, at } = action;
   const attack = fromJS({ from, to, amount, at });
@@ -19,7 +16,6 @@ const startAttack = (state, action) => {
   const newState = state
     .update('ids', ids => ids.push(attackId))
     .setIn(['byId', attackId], attack);
-  console.log('newState: ', newState.toJS());
   return newState;
 };
 

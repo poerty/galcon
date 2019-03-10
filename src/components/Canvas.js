@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { clear, drawPoints } from '../functions/canvas';
+import { clear, drawPoints, fixCanvasPixel } from '../functions/canvas';
 
 class Canvas extends Component {
   constructor(props) {
@@ -14,43 +14,59 @@ class Canvas extends Component {
         return;
       }
       this.canvas = element;
-      // this.canvas.getContext('2d').fillRect(20, 20, 100, 100);
-      this.startDraw(this.canvas);
+
+      fixCanvasPixel(this.canvas);
+
+      const { marineIds, marines } = this.props;
+      const ctx = this.canvas.getContext('2d');
+
+      this.draw(ctx, marineIds, marines);
     };
 
-    this.startDraw = (canvas) => {
-      const points = [
-        { x: 20, y: 20, color: 'blue' },
-      ];
-      setInterval(() => {
-        clear(canvas);
-        drawPoints(canvas, points);
-
-        // if () {
-        //   clearInterval(draw);
-        // }
-      }, process.env.REACT_APP_TIME_INTERVAL);
+    this.draw = (ctx, marineIds, marines) => {
+      const points = [];
+      marines.forEach(marine => {
+        points.push({ x: marine.get('x'), y: marine.get('y'), color: marine.get('color') });
+      });
+      clear(ctx);
+      drawPoints(ctx, points);
     };
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (this.canvas) {
+      const { marineIds, marines } = nextProps;
+      const ctx = this.canvas.getContext('2d');
+
+      this.draw(ctx, marineIds, marines);
+    }
+    return false;
+  }
+
   render() {
-    const { attack } = this.props;
-    console.log('attack: ', attack.toJS());
     return (
       <canvas ref={this.canvasLoad}
         width={`${process.env.REACT_APP_BOARD_SIZE}px`} height={`${process.env.REACT_APP_BOARD_SIZE}px`}
+        style={
+          {
+            width: `${process.env.REACT_APP_BOARD_SIZE}px`,
+            height: `${process.env.REACT_APP_BOARD_SIZE}px`,
+          }
+        }
       />
     );
   }
 }
 
 Canvas.propTypes = {
-  attack: ImmutablePropTypes.list.isRequired,
+  marineIds: ImmutablePropTypes.list.isRequired,
+  marines: ImmutablePropTypes.map.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
-    attack: state.attacks.get('ids'),
+    marineIds: state.board.getIn(['marines', 'ids']),
+    marines: state.board.getIn(['marines', 'byId']),
   };
 };
 
