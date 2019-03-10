@@ -4,33 +4,30 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import { selectAttackFromTower, selectAttackToTower, upgradeTower } from '../actions/board';
-import towerData from '../datas/tower';
 
 
 class Tower extends Component {
   render() {
     const { towerAmount, towerStyle, towerLevel, towerOwnerId } = this.props;
     const { _selectAttackFromTower, _selectAttackToTower, _upgradeTower } = this.props;
-    const towerSize = towerData[towerLevel].size;
-    const fontSize = towerData[towerLevel].fontSize;
-    const style = {
-      zIndex: 3,
-      width: towerSize,
-      height: towerSize,
-      font: `${fontSize}px Arial, sans-serif`,
-      ...towerStyle.toJS(),
-    };
+    const style = towerStyle.toJS();
     if (towerOwnerId === this.props.userId) {
       style.background = 'lightyellow';
     }
+
+    const noselectStyle = {};
+    if (towerAmount < 100) {
+      noselectStyle.width = '100%';
+    }
     return (
-      <div className='tower'
+      <div className={`tower tower-${towerLevel}`}
         style={style}
         onDoubleClick={(_upgradeTower)}
         onMouseDown={_selectAttackFromTower}
         onMouseUp={_selectAttackToTower}
       >
-        <div className='noselect'>{towerAmount}</div>
+        <div className='noselect'
+          style={noselectStyle}>{towerAmount}</div>
       </div>
     );
   }
