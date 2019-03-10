@@ -90,9 +90,9 @@ const module = {
         },
         'f8f02d5b-dc90-49d4-b26d-f824bf406bc4': {
           ownerId: playerId,
-          level: 2,
-          amount: 10,
-          realAmount: 10 * process.env.REACT_APP_CALL_RATIO,
+          level: 5,
+          amount: 100,
+          realAmount: 100 * process.env.REACT_APP_CALL_RATIO,
           style: { top: 400, left: 400 },
         },
       },

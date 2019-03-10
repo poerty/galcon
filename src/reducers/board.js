@@ -29,7 +29,7 @@ const selectAttackFromTower = (state, action) => {
   const fromTowerId = action.towerId;
   const fromTower = state.getIn(['towers', 'byId', fromTowerId]);
   if (!isTowerOwner(fromTower, action.userId)) {
-    return state;
+    return state.deleteIn(['selected', 'from']);
   }
 
   return state.setIn(['selected', 'from'], fromTowerId);
@@ -37,10 +37,13 @@ const selectAttackFromTower = (state, action) => {
 
 const selectAttackToTower = (state, action) => {
   const toTowerId = action.towerId;
-  const toTower = state.getIn(['towers', 'byId', toTowerId]);
   const fromTowerId = state.getIn(['selected', 'from']);
-  const fromTower = state.getIn(['towers', 'byId', fromTowerId]);
+  if (!toTowerId || !fromTowerId) {
+    return state;
+  }
 
+  const toTower = state.getIn(['towers', 'byId', toTowerId]);
+  const fromTower = state.getIn(['towers', 'byId', fromTowerId]);
   const attackPercentage = state.getIn(['selected', 'percentage']);
   if (!toTower || !fromTower || !attackPercentage) {
     return state;
@@ -141,26 +144,45 @@ const moveMarin = (state) => {
   const now = (new Date()).getTime() / 1000;
   const marineIds = state.getIn(['marines', 'ids']);
 
-  const newState = state.withMutations(map => {
-    marineIds.forEach(marineId => {
-      const marine = map.getIn(['marines', 'byId', marineId]);
+  // no mutation cause of lock
+  let newState = state;
+  marineIds.forEach(marineId => {
+    const marine = newState.getIn(['marines', 'byId', marineId]);
 
-      const at = marine.get('at');
-      const duration = marine.get('duration');
-      const percentage = (now - at) / duration;
-      if (percentage >= 1) {
-        // marine arrived to tower
-        map
-          .updateIn(['marines', 'ids'], ids => ids.filter(id => id !== marineId))
-          .deleteIn(['marines', 'byId', marineId]);
-      } else {
-        const curve = marine.get('curve');
-        const point = curve.get(percentage);
-        map
-          .setIn(['marines', 'byId', marineId, 'x'], point.x)
-          .setIn(['marines', 'byId', marineId, 'y'], point.y);
+    const at = marine.get('at');
+    const duration = marine.get('duration');
+    const percentage = (now - at) / duration;
+    if (percentage >= 1) {
+      const attackOwnerId = marine.get('ownerId');
+      const toTowerId = marine.get('toTowerId');
+      const realAmount = newState.getIn(['towers', 'byId', toTowerId, 'realAmount']);
+      let newRealAmount;
+      let newOwnerId = newState.getIn(['towers', 'byId', toTowerId, 'ownerId']);
+      if (newOwnerId === attackOwnerId) {
+        newRealAmount = math.add(realAmount, callRatio);
       }
-    });
+      else if (realAmount < callRatio) {
+        // change owner of tower
+        newRealAmount = math.subtract(callRatio, realAmount);
+        newOwnerId = attackOwnerId;
+      } else {
+        newRealAmount = math.subtract(realAmount, callRatio);
+      }
+
+      newState = newState
+        .setIn(['towers', 'byId', toTowerId, 'ownerId'], newOwnerId)
+        .setIn(['towers', 'byId', toTowerId, 'realAmount'], newRealAmount)
+        .setIn(['towers', 'byId', toTowerId, 'amount'],
+          math.floor(math.divide(newState.getIn(['towers', 'byId', toTowerId, 'realAmount']), callRatio)))
+        .updateIn(['marines', 'ids'], ids => ids.filter(id => id !== marineId))
+        .deleteIn(['marines', 'byId', marineId]);
+    } else {
+      const curve = marine.get('curve');
+      const point = curve.get(percentage);
+      newState = newState
+        .setIn(['marines', 'byId', marineId, 'x'], point.x)
+        .setIn(['marines', 'byId', marineId, 'y'], point.y);
+    }
   });
   return newState;
 };
@@ -173,34 +195,32 @@ const createMarine = (state) => {
     attackIds.forEach(attackId => {
       const attack = state.getIn(['attacks', 'byId', attackId]);
       const fromTowerId = attack.getIn(['from', 'towerId']);
+      const toTowerId = attack.getIn(['to', 'towerId']);
       let marineAmount = process.env.REACT_APP_MAX_ATTACK_SIZE;
 
-      // subtract from attackAmount
       const attackAmount = attack.get('amount');
       marineAmount = math.min(marineAmount, attackAmount);
-      if (marineAmount === process.env.REACT_APP_MAX_ATTACK_SIZE) {
-        map.updateIn(['attacks', 'byId', attackId, 'amount'], amount => amount - marineAmount);
-      }
-      else {
-        // if attack is finished, delete it
+
+      const towerAmount = state.getIn(['towers', 'byId', fromTowerId, 'amount']);
+      marineAmount = math.min(marineAmount, towerAmount);
+
+      // if attack is finished, delete it
+      if (marineAmount !== process.env.REACT_APP_MAX_ATTACK_SIZE) {
         map
           .updateIn(['attacks', 'ids'], ids => ids.filter(id => id !== attackId))
           .deleteIn(['attacks', 'byId', attackId]);
       }
 
+      // subtract from attackAmount
+      map.updateIn(['attacks', 'byId', attackId, 'amount'], amount => amount - marineAmount);
+
       // subtract from towerAmount
-      const towerAmount = state.getIn(['towers', 'byId', fromTowerId, 'amount']);
-      marineAmount = math.min(marineAmount, towerAmount);
       map
         .updateIn(['towers', 'byId', fromTowerId, 'realAmount'],
           realAmount => math.max(0, math.subtract(realAmount, callRatio * marineAmount))
         )
         .setIn(['towers', 'byId', fromTowerId, 'amount'],
-          math.floor(
-            math.divide(
-              state.getIn(['towers', 'byId', fromTowerId, 'realAmount']),
-              callRatio)
-          )
+          math.floor(math.divide(state.getIn(['towers', 'byId', fromTowerId, 'realAmount']), callRatio))
         );
 
       const startPoint = { x: attack.getIn(['from', 'left']), y: attack.getIn(['from', 'top']) };
@@ -221,6 +241,9 @@ const createMarine = (state) => {
         map
           .updateIn(['marines', 'ids'], ids => ids.push(marineId))
           .setIn(['marines', 'byId', marineId], Map({
+            ownerId: attack.get('ownerId'),
+            fromTowerId,
+            toTowerId,
             startPoint: Map(startPoint),
             endPoint: Map(endPoint),
             controllPoint: Map(controllPoints[i]),
