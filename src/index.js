@@ -13,9 +13,18 @@ import * as serviceWorker from './serviceWorker';
 
 require('dotenv').config();
 
+function addUserId({ getState }) {
+  return next => action => {
+    // add userId to all action
+    action.userId = getState().users.get('id');
+    const returnValue = next(action);
+    return returnValue;
+  };
+}
+
 const store = createStore(
   galconApp,
-  applyMiddleware(thunk)
+  applyMiddleware(addUserId, thunk)
 );
 
 ReactDOM.render(

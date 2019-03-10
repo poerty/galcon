@@ -4,7 +4,7 @@ import mapInfos from '../datas/map';
 // import { Map } from 'immutable';
 
 const initialState = mapInfos.map1.users
-  .set('playerId', mapInfos.map1.users.getIn(['ids', 0]));
+  .set('id', mapInfos.map1.users.getIn(['ids', 0]));
 
 
 const userReducer = (state = initialState, action) => {

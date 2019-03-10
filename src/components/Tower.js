@@ -9,7 +9,7 @@ import towerData from '../datas/tower';
 
 class Tower extends Component {
   render() {
-    const { towerAmount, towerStyle, towerLevel } = this.props;
+    const { towerAmount, towerStyle, towerLevel, towerOwnerId } = this.props;
     const { _selectAttackFromTower, _selectAttackToTower, _upgradeTower } = this.props;
     const towerSize = towerData[towerLevel].size;
     const fontSize = towerData[towerLevel].fontSize;
@@ -20,6 +20,9 @@ class Tower extends Component {
       font: `${fontSize}px Arial, sans-serif`,
       ...towerStyle.toJS(),
     };
+    if (towerOwnerId === this.props.userId) {
+      style.background = 'lightyellow';
+    }
     return (
       <div className='tower'
         style={style}
@@ -34,11 +37,12 @@ class Tower extends Component {
 }
 
 Tower.propTypes = {
-  // playerId: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 
   towerStyle: ImmutablePropTypes.map.isRequired,
   towerAmount: PropTypes.number.isRequired,
   towerLevel: PropTypes.number.isRequired,
+  towerOwnerId: PropTypes.string.isRequired,
 
   _selectAttackFromTower: PropTypes.func.isRequired,
   _selectAttackToTower: PropTypes.func.isRequired,
@@ -47,11 +51,12 @@ Tower.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    // playerId: state.users.get('playerId'),
+    userId: state.users.get('id'),
 
     towerStyle: state.board.getIn(['towers', 'byId', ownProps.id, 'style']),
     towerAmount: state.board.getIn(['towers', 'byId', ownProps.id, 'amount']),
     towerLevel: state.board.getIn(['towers', 'byId', ownProps.id, 'level']),
+    towerOwnerId: state.board.getIn(['towers', 'byId', ownProps.id, 'ownerId']),
   };
 };
 

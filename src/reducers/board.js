@@ -3,10 +3,12 @@ import * as ActionTypes from '../actions/board';
 import towerInfos from '../datas/tower';
 import mapInfos from '../datas/map';
 import { Map, fromJS } from 'immutable';
+
 import math from 'mathjs';
+import Bezier from 'bezier-js';
 
 import { getControllPoints } from '../functions/canvas';
-import Bezier from 'bezier-js';
+import { isTowerOwner } from '../functions/checker';
 
 import uuidv4 from 'uuidv4';
 
@@ -25,6 +27,10 @@ const callRatio = process.env.REACT_APP_CALL_RATIO;
 
 const selectAttackFromTower = (state, action) => {
   const fromTowerId = action.towerId;
+  const fromTower = state.getIn(['towers', 'byId', fromTowerId]);
+  if (!isTowerOwner(fromTower, action.userId)) {
+    return state;
+  }
 
   return state.setIn(['selected', 'from'], fromTowerId);
 };
@@ -46,6 +52,7 @@ const selectAttackToTower = (state, action) => {
   const attackAmount = math.floor(math.multiply(fromTower.get('amount'), attackPercentage));
   const attackId = uuidv4();
   const attack = Map({
+    ownerId: action.userId,
     amount: attackAmount,
     from: Map({
       towerId: fromTowerId,
@@ -61,17 +68,19 @@ const selectAttackToTower = (state, action) => {
   });
 
   return state
-    .set('selected', Map({
-      percentage: 1.0,
-    }))
+    .set('selected', Map({ percentage: 1.0 }))
     .updateIn(['attacks', 'ids'], ids => ids.push(attackId))
     .setIn(['attacks', 'byId', attackId], attack);
 };
 
 const upgradeTower = (state, action) => {
   const towerId = action.towerId;
-  const level = state.getIn(['towers', 'byId', towerId, 'level']);
-  const amount = state.getIn(['towers', 'byId', towerId, 'amount']);
+  const tower = state.getIn(['towers', 'byId', towerId]);
+  if (!isTowerOwner(tower, action.userId)) {
+    return state;
+  }
+  const level = tower.get('level');
+  const amount = tower.get('amount');
   const towerInfo = towerInfos[level];
   // max level exceed
   if (level >= 5 || !towerInfo.upgradeCost) {
@@ -91,6 +100,7 @@ const upgradeTower = (state, action) => {
       )
     );
 };
+
 
 
 const addTowerAmount = (state) => {

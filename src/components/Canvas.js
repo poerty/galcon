@@ -14,12 +14,10 @@ class Canvas extends Component {
         return;
       }
       this.canvas = element;
-
       fixCanvasPixel(this.canvas);
 
       const { marineIds, marines } = this.props;
       const ctx = this.canvas.getContext('2d');
-
       this.draw(ctx, marineIds, marines);
     };
 
@@ -35,9 +33,9 @@ class Canvas extends Component {
 
   shouldComponentUpdate(nextProps) {
     if (this.canvas) {
+      // no re-render dom, only re-draw
       const { marineIds, marines } = nextProps;
       const ctx = this.canvas.getContext('2d');
-
       this.draw(ctx, marineIds, marines);
     }
     return false;
