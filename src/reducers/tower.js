@@ -2,18 +2,14 @@ import * as ActionTypes from '../actions/tower';
 
 import towerInfos from '../datas/tower';
 import mapInfos from '../datas/map';
-import { Map, List } from 'immutable';
-import uuidv4 from 'uuidv4';
+import { Map } from 'immutable';
 import math from 'mathjs';
 
 const initialState = mapInfos.map1.towers
   .set('selected', Map({
     percentage: 1.0,
-  }))
-  .set('attacks', Map({
-    ids: List([]),
-    byId: Map({}),
   }));
+
 
 // call timer per 5 second(10000 ms)
 const callRatio = process.env.REACT_APP_CALL_RATIO;
@@ -43,7 +39,6 @@ const selectToTower = (state, action) => {
   }
 
   const attackAmount = Math.floor(state.getIn(['byId', fromTowerId, 'amount']) * attackPercentage);
-  const attackId = uuidv4();
   const attack = Map({
     amount: attackAmount,
     from: Map({
@@ -61,20 +56,18 @@ const selectToTower = (state, action) => {
   });
 
   return state
-    .setIn(['selected'], Map({ percentage: 1.0 }))
-    .updateIn(['byId', fromTowerId, 'realAmount'],
-      realAmount => {
-        const newRealAmount = Math.max(
-          0,
-          math.subtract(realAmount, math.multiply(callRatio, attackAmount))
-        );
-        return newRealAmount;
-      }
-    )
-    .setIn(['byId', fromTowerId, 'amount'],
-      math.floor(math.divide(state.getIn(['byId', fromTowerId, 'realAmount']), callRatio)))
-    .updateIn(['attacks', 'ids'], ids => ids.push(attackId))
-    .setIn(['attacks', 'byId', attackId], attack);
+    .setIn(['selected'], attack);
+  // .updateIn(['byId', fromTowerId, 'realAmount'],
+  //   realAmount => {
+  //     const newRealAmount = Math.max(
+  //       0,
+  //       math.subtract(realAmount, math.multiply(callRatio, attackAmount))
+  //     );
+  //     return newRealAmount;
+  //   }
+  // )
+  // .setIn(['byId', fromTowerId, 'amount'],
+  //   math.floor(math.divide(state.getIn(['byId', fromTowerId, 'realAmount']), callRatio)));
 };
 
 const marineArriveTower = (state, action) => {
@@ -103,14 +96,6 @@ const marineArriveTower = (state, action) => {
       math.floor(math.divide(state.getIn(['byId', towerId, 'realAmount']), callRatio)));
 };
 
-const attackEnd = (state, action) => {
-  const attackId = action.attackId;
-
-  const newState = state
-    .deleteIn(['attacks', 'byId', attackId])
-    .updateIn(['attacks', 'ids'], ids => ids.filter(id => id !== attackId));
-  return newState;
-};
 
 const upgradeTower = (state, action) => {
   const towerId = action.towerId;
@@ -159,6 +144,21 @@ const addAmount = (state) => {
   });
 };
 
+const subAmount = (state, action) => {
+  const subAmount = action.subAmount;
+  const towerId = action.towerId;
+
+  const realAmount = state.getIn(['byId', towerId, 'realAmount']);
+  const newRealAmount = math.max(0, math.subtract(realAmount, math.multiply(callRatio, subAmount)));
+  const amount = state.getIn(['byId', towerId, 'amount']);
+  const newAmount = math.floor(math.divide(newRealAmount, callRatio));
+
+  return state
+    .setIn(['byId', towerId, 'realAmount'], newRealAmount)
+    .setIn(['byId', towerId, 'amount'], newAmount)
+    .setIn(['selected', 'subAmount'], math.subtract(newAmount - amount));
+};
+
 const towerReducer = (state = initialState, action) => {
   switch (action.type) {
     case ActionTypes.SELECT_FROM_TOWER:
@@ -167,13 +167,13 @@ const towerReducer = (state = initialState, action) => {
       return selectToTower(state, action);
     case ActionTypes.MARINE_ARRIVE_TOWER:
       return marineArriveTower(state, action);
-    case ActionTypes.ATTACK_END:
-      return attackEnd(state, action);
     case ActionTypes.UPGRADE_TOWER:
       return upgradeTower(state, action);
 
     case ActionTypes.ADD_AMOUNT:
       return addAmount(state, action);
+    case ActionTypes.SUB_AMOUNT:
+      return subAmount(state, action);
 
     default:
       return state;

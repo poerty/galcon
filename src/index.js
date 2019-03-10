@@ -3,16 +3,20 @@ import ReactDOM from 'react-dom';
 import 'normalize.css';
 import './index.css';
 
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import galconApp from './reducers';
+import thunk from 'redux-thunk';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 require('dotenv').config();
 
-const store = createStore(galconApp);
+const store = createStore(
+  galconApp,
+  applyMiddleware(thunk)
+);
 
 ReactDOM.render(
   <Provider store={store}>

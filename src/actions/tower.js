@@ -1,3 +1,5 @@
+import { startAttack } from './attack';
+
 export const SELECT_FROM_TOWER = 'SELECT_FROM_TOWER';
 export function selectFromTower(towerId, playerId) {
   return {
@@ -16,18 +18,19 @@ export function selectToTower(towerId, playerId) {
   };
 }
 
+export const SELECT_TO_TOWER_AND_ATTACK = 'SELECT_TO_TOWER_AND_ATTACK';
+export function selectToTowerAndAttack(towerId, playerId) {
+  return (dispatch, getState) => {
+    dispatch(selectToTower(towerId, playerId));
+    const selected = getState().towers.get('selected');
+    dispatch(startAttack(selected));
+  };
+}
+
 export const MARINE_ARRIVE_TOWER = 'MARINE_ARRIVE_TOWER';
 export function marineArriveTower(attackId) {
   return {
     type: MARINE_ARRIVE_TOWER,
-    attackId,
-  };
-}
-
-export const ATTACK_END = 'ATTACK_END';
-export function attackEnd(attackId) {
-  return {
-    type: ATTACK_END,
     attackId,
   };
 }

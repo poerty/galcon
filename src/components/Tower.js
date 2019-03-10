@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
-import { selectFromTower, selectToTower, upgradeTower } from '../actions/tower';
+import { selectFromTower, selectToTowerAndAttack, upgradeTower } from '../actions/tower';
 import towerData from '../datas/tower';
 
 
@@ -12,19 +12,19 @@ class Tower extends Component {
     super(props);
     const { playerId } = props;
     this._selectFromTower = () => this.props._selectFromTower(playerId);
-    this._selectToTower = () => this.props._selectToTower(playerId);
+    this._selectToTowerAndAttack = () => this.props._selectToTowerAndAttack(playerId);
     this._upgradeTower = () => this.props._upgradeTower(playerId);
   }
 
   render() {
     const { playerId, towerOwnerId, towerAmount, towerStyle, towerLevel } = this.props;
-    const { _selectFromTower, _selectToTower, _upgradeTower } = this;
+    const { _selectFromTower, _selectToTowerAndAttack, _upgradeTower } = this;
     const towerSize = towerData[towerLevel].size;
     const fontSize = towerData[towerLevel].fontSize;
     const style = {
       width: towerSize,
       height: towerSize,
-      font: fontSize + 'px Arial, sans-serif',
+      font: `${fontSize}px Arial, sans-serif`,
       ...towerStyle.toJS(),
     };
     if (playerId === towerOwnerId) {
@@ -35,7 +35,7 @@ class Tower extends Component {
         style={style}
         onDoubleClick={_upgradeTower}
         onMouseDown={_selectFromTower}
-        onMouseUp={_selectToTower}
+        onMouseUp={_selectToTowerAndAttack}
       >
         <div className='noselect'>{towerAmount}</div>
       </div>
@@ -52,7 +52,7 @@ Tower.propTypes = {
   towerLevel: PropTypes.number.isRequired,
 
   _selectFromTower: PropTypes.func.isRequired,
-  _selectToTower: PropTypes.func.isRequired,
+  _selectToTowerAndAttack: PropTypes.func.isRequired,
   _upgradeTower: PropTypes.func.isRequired,
 };
 
@@ -70,7 +70,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     _selectFromTower: (playerId) => dispatch(selectFromTower(ownProps.id, playerId)),
-    _selectToTower: (playerId) => dispatch(selectToTower(ownProps.id, playerId)),
+    _selectToTowerAndAttack: (playerId) => dispatch(selectToTowerAndAttack(ownProps.id, playerId)),
     _upgradeTower: (playerId) => dispatch(upgradeTower(ownProps.id, playerId)),
   };
 };
