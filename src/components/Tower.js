@@ -16,8 +16,8 @@ class Tower extends Component {
     }
 
     const noselectStyle = {};
-    if (towerAmount < 100) {
-      noselectStyle.width = '100%';
+    if (towerAmount.toString()[0] === '1') {
+      noselectStyle.paddingRight = '0.5px';
     }
     return (
       <div className={`tower tower-${towerLevel}`}
