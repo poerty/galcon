@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
-// import PropTypes from 'prop-types';
 
 import Board from './layouts/Board';
 import Hidden from './layouts/Hidden';

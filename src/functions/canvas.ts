@@ -1,20 +1,20 @@
-const clear = (ctx) => {
+const clear = (ctx: any) => {
   ctx.clearRect(0, 0, process.env.REACT_APP_BOARD_SIZE, process.env.REACT_APP_BOARD_SIZE);
 };
 
-const drawPoints = (ctx, points) => {
+const drawPoints = (ctx: any, points: any) => {
 
   // erase what is on the canvas currently
   // ctx.clearRect(0, 0, process.env.REACT_APP_BOARD_SIZE, process.env.REACT_APP_BOARD_SIZE);
 
   // draw each point as a rectangle
-  points.forEach(point => {
+  points.forEach((point: any) => {
     ctx.fillStyle = point.color;
     ctx.fillRect(point.x, point.y, process.env.REACT_APP_PIXEL_SIZE, process.env.REACT_APP_PIXEL_SIZE);
   });
 };
 
-const fixCanvasPixel = (canvas) => {
+const fixCanvasPixel = (canvas: any) => {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const bsr = ctx.webkitBackingStorePixelRatio ||
@@ -23,14 +23,14 @@ const fixCanvasPixel = (canvas) => {
     ctx.oBackingStorePixelRatio ||
     ctx.backingStorePixelRatio || 1;
   const ratio = dpr / bsr;
-  canvas.width = process.env.REACT_APP_BOARD_SIZE * ratio;
-  canvas.height = process.env.REACT_APP_BOARD_SIZE * ratio;
+  canvas.width = parseInt(process.env.REACT_APP_BOARD_SIZE || '') * ratio;
+  canvas.height = parseInt(process.env.REACT_APP_BOARD_SIZE || '') * ratio;
   canvas.style.width = `${process.env.REACT_APP_BOARD_SIZE}px`;
   canvas.style.height = `${process.env.REACT_APP_BOARD_SIZE}px`;
   canvas.getContext('2d').setTransform(ratio, 0, 0, ratio, 0, 0);
 };
 
-const getControllPoints = (amount, startPoint, endPoint, distance) => {
+const getControllPoints = (amount: number, startPoint: { x: number, y: number }, endPoint: { x: number, y: number }, distance: number) => {
   const yDistance = endPoint.y - startPoint.y;
   const xDistance = endPoint.x - startPoint.x;
   const dDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));

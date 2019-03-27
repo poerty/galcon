@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
+import { List } from 'immutable'
 
 import Tower from '../components/Tower';
 
-class Towers extends Component {
+interface TowersProp {
+  towerIds: List<any>
+}
+class Towers extends Component<TowersProp> {
   render() {
     const { towerIds } = this.props;
-    const style = {
+    const style: any = {
       width: `${process.env.REACT_APP_BOARD_SIZE}px`, height: `${process.env.REACT_APP_BOARD_SIZE}px`,
       border: '1px solid black',
       position: 'absolute',
@@ -16,7 +18,7 @@ class Towers extends Component {
     };
     return (
       <div style={style}>
-        {towerIds.map(towerId => (
+        {towerIds.map((towerId: string) => (
           <Tower key={towerId} id={towerId} />
         ))}
       </div>
@@ -24,11 +26,7 @@ class Towers extends Component {
   }
 }
 
-Towers.propTypes = {
-  towerIds: ImmutablePropTypes.list.isRequired,
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   towerIds: state.board.getIn(['towers', 'ids']),
 });
 

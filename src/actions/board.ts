@@ -4,7 +4,7 @@
 
 // select from tower for attack
 export const SELECT_ATTACK_FROM_TOWER = 'SELECT_ATTACK_FROM_TOWER';
-export function selectAttackFromTower(towerId) {
+export function selectAttackFromTower(towerId: string) {
   return {
     type: SELECT_ATTACK_FROM_TOWER,
     towerId,
@@ -13,7 +13,7 @@ export function selectAttackFromTower(towerId) {
 
 // select to tower for attack & generate new attack
 export const SELECT_ATTACK_TO_TOWER = 'SELECT_ATTACK_TO_TOWER';
-export function selectAttackToTower(towerId) {
+export function selectAttackToTower(towerId: string) {
   return {
     type: SELECT_ATTACK_TO_TOWER,
     towerId,
@@ -22,7 +22,7 @@ export function selectAttackToTower(towerId) {
 
 // upgrade tower level
 export const UPGRADE_TOWER = 'UPGRADE_TOWER';
-export function upgradeTower(towerId) {
+export function upgradeTower(towerId: string) {
   return {
     type: UPGRADE_TOWER,
     towerId,

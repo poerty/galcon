@@ -1,30 +1,40 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
+import { List, Map } from 'immutable'
 
 import { selectAttackFromTower, selectAttackToTower, upgradeTower } from '../actions/board';
 
+interface TowerProps {
+  userId: string,
 
-class Tower extends Component {
+  towerStyle: Map<any, any>,
+  towerAmount: number,
+  towerLevel: number,
+  towerOwnerId: string,
+
+  _selectAttackFromTower: Function,
+  _selectAttackToTower: Function,
+  _upgradeTower: Function,
+}
+class Tower extends Component<TowerProps> {
   render() {
     const { towerAmount, towerStyle, towerLevel, towerOwnerId } = this.props;
     const { _selectAttackFromTower, _selectAttackToTower, _upgradeTower } = this.props;
-    const style = towerStyle.toJS();
+    const style: any = towerStyle.toJS();
     if (towerOwnerId === this.props.userId) {
       style.background = 'lightyellow';
     }
 
-    const noselectStyle = {};
+    const noselectStyle: any = {};
     if (towerAmount.toString()[0] === '1') {
       noselectStyle.paddingRight = '0.5px';
     }
     return (
       <div className={`tower tower-${towerLevel}`}
         style={style}
-        onDoubleClick={(_upgradeTower)}
-        onMouseDown={_selectAttackFromTower}
-        onMouseUp={_selectAttackToTower}
+        onDoubleClick={() => _upgradeTower()}
+        onMouseDown={() => _selectAttackFromTower()}
+        onMouseUp={() => _selectAttackToTower()}
       >
         <div className='noselect'
           style={noselectStyle}>{towerAmount}</div>
@@ -33,20 +43,9 @@ class Tower extends Component {
   }
 }
 
-Tower.propTypes = {
-  userId: PropTypes.string.isRequired,
 
-  towerStyle: ImmutablePropTypes.map.isRequired,
-  towerAmount: PropTypes.number.isRequired,
-  towerLevel: PropTypes.number.isRequired,
-  towerOwnerId: PropTypes.string.isRequired,
 
-  _selectAttackFromTower: PropTypes.func.isRequired,
-  _selectAttackToTower: PropTypes.func.isRequired,
-  _upgradeTower: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state: any, ownProps: any) => {
   return {
     userId: state.users.get('id'),
 
@@ -57,7 +56,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch: any, ownProps: any) => {
   return {
     _selectAttackFromTower: () => dispatch(selectAttackFromTower(ownProps.id)),
     _selectAttackToTower: () => dispatch(selectAttackToTower(ownProps.id)),

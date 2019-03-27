@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
+import { List, Map } from 'immutable'
 import { clear, drawPoints, fixCanvasPixel } from '../functions/canvas';
 
-class Canvas extends Component {
-  constructor(props) {
+interface CanvasProps {
+  marineIds: List<any>,
+  marines: Map<any, any>,
+}
+class Canvas extends Component<CanvasProps> {
+  canvas?: HTMLCanvasElement;
+  canvasLoad: Function;
+  draw: Function;
+
+  constructor(props: any) {
     super(props);
 
-    this.canvas = React.createRef();
-    this.canvasLoad = (element) => {
+    // this.canvas = React.createRef();
+    this.canvasLoad = (element: HTMLCanvasElement) => {
       if (!element) {
         return;
       }
@@ -21,9 +28,9 @@ class Canvas extends Component {
       this.draw(ctx, marineIds, marines);
     };
 
-    this.draw = (ctx, marineIds, marines) => {
-      const points = [];
-      marines.forEach(marine => {
+    this.draw = (ctx: any, marineIds: any, marines: any) => {
+      const points: any[] = [];
+      marines.forEach((marine: any) => {
         points.push({ x: marine.get('x'), y: marine.get('y'), color: marine.get('color') });
       });
       clear(ctx);
@@ -31,7 +38,7 @@ class Canvas extends Component {
     };
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps: any) {
     if (this.canvas) {
       // no re-render dom, only re-draw
       const { marineIds, marines } = nextProps;
@@ -43,7 +50,7 @@ class Canvas extends Component {
 
   render() {
     return (
-      <canvas ref={this.canvasLoad}
+      <canvas ref={this.canvasLoad as any}
         width={`${process.env.REACT_APP_BOARD_SIZE}px`} height={`${process.env.REACT_APP_BOARD_SIZE}px`}
         style={
           {
@@ -56,12 +63,7 @@ class Canvas extends Component {
   }
 }
 
-Canvas.propTypes = {
-  marineIds: ImmutablePropTypes.list.isRequired,
-  marines: ImmutablePropTypes.map.isRequired,
-};
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
   return {
     marineIds: state.board.getIn(['marines', 'ids']),
     marines: state.board.getIn(['marines', 'byId']),

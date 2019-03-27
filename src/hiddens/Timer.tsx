@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import PropTypes from 'prop-types';
+import { Map } from 'immutable'
 
 import { initTimer } from '../actions/timer';
 import { addTowerAmount, moveMarine, createMarine } from '../actions/board';
 
+interface TimerProps {
+  timer: Map<any, any>,
 
-class Timer extends Component {
+  _addTowerAmount: Function,
+  _moveMarine: Function,
+  _createMarine: Function,
+
+  _initTimer: Function,
+}
+class Timer extends Component<TimerProps> {
 
   render() {
     const { _addTowerAmount, _moveMarine, _createMarine, _initTimer } = this.props;
@@ -16,11 +23,11 @@ class Timer extends Component {
       setInterval(() => {
         _addTowerAmount();
         _moveMarine();
-      }, process.env.REACT_APP_TIME_INTERVAL);
+      }, parseInt(process.env.REACT_APP_TIME_INTERVAL || ''));
 
       setInterval(() => {
         _createMarine();
-      }, process.env.REACT_APP_TIME_INTERVAL * 30);
+      }, parseInt(process.env.REACT_APP_TIME_INTERVAL || '') * 30);
     } else {
       _initTimer((new Date()).getTime());
     }
@@ -28,29 +35,19 @@ class Timer extends Component {
   }
 }
 
-Timer.propTypes = {
-  timer: ImmutablePropTypes.map.isRequired,
-
-  _addTowerAmount: PropTypes.func.isRequired,
-  _moveMarine: PropTypes.func.isRequired,
-  _createMarine: PropTypes.func.isRequired,
-
-  _initTimer: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
   return {
     timer: state.timer,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: any) => {
   return {
     _addTowerAmount: () => dispatch(addTowerAmount()),
     _moveMarine: () => dispatch(moveMarine()),
     _createMarine: () => dispatch(createMarine()),
 
-    _initTimer: (timer) => dispatch(initTimer(timer)),
+    _initTimer: (timer: any) => dispatch(initTimer(timer)),
   };
 };
 

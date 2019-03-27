@@ -3,7 +3,7 @@
  * @param {Immutable.map} tower 
  * @param {string} userId 
  */
-const isTowerOwner = (tower, userId) => {
+const isTowerOwner = (tower: any, userId: string) => {
   if (!tower || !userId) {
     return false;
   }
