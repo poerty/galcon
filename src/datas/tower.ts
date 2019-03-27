@@ -1,5 +1,5 @@
 // rate is per 3 second
-const module = {
+const module: any = {
   1: {
     rate: 1,
     max: 20,

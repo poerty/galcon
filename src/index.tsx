@@ -13,8 +13,8 @@ import * as serviceWorker from './serviceWorker';
 
 require('dotenv').config();
 
-function addUserId({ getState }) {
-  return next => action => {
+function addUserId({ getState }: { getState: Function }) {
+  return (next: Function) => (action: any) => {
     // add userId to all action
     action.userId = getState().users.get('id');
     const returnValue = next(action);
@@ -22,9 +22,18 @@ function addUserId({ getState }) {
   };
 }
 
+function addTimeStamp() {
+  return (next: Function) => (action: any) => {
+    // add timestamp:now to all action
+    action.now = (new Date()).getTime() / 1000;
+    const returnValue = next(action);
+    return returnValue;
+  };
+}
+
 const store = createStore(
   galconApp,
-  applyMiddleware(addUserId, thunk)
+  applyMiddleware(addUserId, addTimeStamp, thunk)
 );
 
 ReactDOM.render(
