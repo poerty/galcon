@@ -1,12 +1,12 @@
-import { Map, fromJS } from 'immutable';
+import { Map, fromJS, List } from 'immutable';
 import Bezier from 'bezier-js';
 import uuidv4 from 'uuidv4';
 
 import * as ActionTypes from 'actions/board';
 
 import Tower from 'models/tower'
+import ObjectList from 'models/objectList'
 
-import towerInfos from 'datas/tower';
 import mapInfos from 'datas/map';
 
 import { getControllPoints } from 'functions/canvas';
@@ -15,15 +15,15 @@ import { isTowerOwner } from 'functions/checker';
 const towers = mapInfos.map1.towers;
 const initialState = fromJS({
   towers,
-  attacks: { byId: {}, ids: [] },
-  marines: { byId: {}, ids: [] },
+  attacks: new ObjectList(),
+  marines: new ObjectList(),
   selected: {
     percentage: 1.0,
   },
 });
 
 // call timer per 5 second(10000 ms)
-const callRatio: number = parseInt(process.env['REACT_APP_CALL_RATIO'] || '');
+const callRatio: number = parseInt(getEnv('REACT_APP_CALL_RATIO'));
 
 const selectAttackFromTower = (state: any, action: any) => {
   const fromTowerId = action.towerId;
@@ -52,11 +52,9 @@ const selectAttackToTower = (state: any, action: any) => {
     return state;
   }
 
-  const attackAmount = Math.floor(fromTower.get('amount') * attackPercentage);
-  const attackId = uuidv4();
   const attack = Map({
     ownerId: action.userId,
-    amount: attackAmount,
+    amount: Math.floor(fromTower.get('amount') * attackPercentage),
     from: Map({
       towerId: fromTowerId,
       top: fromTower.getIn(['style', 'top']),
@@ -72,8 +70,8 @@ const selectAttackToTower = (state: any, action: any) => {
 
   return state
     .set('selected', Map({ percentage: 1.0 }))
-    .updateIn(['attacks', 'ids'], (ids: any) => ids.push(attackId))
-    .setIn(['attacks', 'byId', attackId], attack);
+    .update('attacks',
+      (attacks: ObjectList) => attacks.add(attack))
 };
 
 const upgradeTower = (state: any, action: any) => {
@@ -86,7 +84,6 @@ const upgradeTower = (state: any, action: any) => {
   return state.updateIn(['towers', 'byId', towerId],
     (tower: Tower) => tower.upgrade())
 };
-
 
 
 const addTowerAmount = (state: any, action: any) => {
@@ -134,8 +131,8 @@ const moveMarin = (state: any, action: any) => {
         .setIn(['towers', 'byId', toTowerId, 'ownerId'], newOwnerId)
         .updateIn(['towers', 'byId', toTowerId],
           (tower: Tower) => tower.setAmount(newRealAmount))
-        .updateIn(['marines', 'ids'], (ids: any) => ids.filter((id: string) => id !== marineId))
-        .deleteIn(['marines', 'byId', marineId]);
+        .update('marines',
+          (marines: ObjectList) => marines.remove(marineId))
     } else {
       const curve = marine.get('curve');
       const point = curve.get(percentage);
@@ -156,7 +153,7 @@ const createMarine = (state: any, action: any) => {
       const attack = state.getIn(['attacks', 'byId', attackId]);
       const fromTowerId = attack.getIn(['from', 'towerId']);
       const toTowerId = attack.getIn(['to', 'towerId']);
-      let marineAmount = parseInt(process.env.REACT_APP_MAX_ATTACK_SIZE || '');
+      let marineAmount = parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'));
 
       const attackAmount = attack.get('amount');
       marineAmount = Math.min(marineAmount, attackAmount);
@@ -165,10 +162,9 @@ const createMarine = (state: any, action: any) => {
       marineAmount = Math.min(marineAmount, towerAmount);
 
       // if attack is finished, delete it
-      if (marineAmount !== parseInt(process.env.REACT_APP_MAX_ATTACK_SIZE || '')) {
-        map
-          .updateIn(['attacks', 'ids'], (ids: any) => ids.filter((id: string) => id !== attackId))
-          .deleteIn(['attacks', 'byId', attackId]);
+      if (marineAmount !== parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'))) {
+        map.update('attacks',
+          (attacks: ObjectList) => attacks.remove(attackId))
       }
 
       // subtract from attackAmount
@@ -192,23 +188,22 @@ const createMarine = (state: any, action: any) => {
         const curve = new Bezier(startPoint, controllPoints[i], endPoint);
         // const LUT = curve.getLUT(1000);
         const point = curve.get(0);
-        const marineId = uuidv4();
-        map
-          .updateIn(['marines', 'ids'], (ids: any) => ids.push(marineId))
-          .setIn(['marines', 'byId', marineId], Map({
-            ownerId: attack.get('ownerId'),
-            fromTowerId,
-            toTowerId,
-            startPoint: Map(startPoint),
-            endPoint: Map(endPoint),
-            controllPoint: Map(controllPoints[i]),
-            curve,
-            x: point.x,
-            y: point.y,
-            color: 'red',
-            at: now,
-            duration,
-          }));
+        const marine = Map({
+          ownerId: attack.get('ownerId'),
+          fromTowerId,
+          toTowerId,
+          startPoint: Map(startPoint),
+          endPoint: Map(endPoint),
+          controllPoint: Map(controllPoints[i]),
+          curve,
+          x: point.x,
+          y: point.y,
+          color: 'red',
+          at: now,
+          duration,
+        })
+        map.update('marines',
+          (marines: ObjectList) => marines.add(marine))
       }
     });
   });

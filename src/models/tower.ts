@@ -1,7 +1,7 @@
 import { Record } from 'immutable';
 
 import towerInfos from 'datas/tower';
-const callRatio: number = parseInt(process.env['REACT_APP_CALL_RATIO'] || '');
+const callRatio: number = parseInt(getEnv('REACT_APP_CALL_RATIO'));
 
 type TowerProp = {
   ownerId: string,

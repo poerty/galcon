@@ -11,7 +11,7 @@ class Towers extends Component<TowersProp> {
   render() {
     const { towerIds } = this.props;
     const style: any = {
-      width: `${process.env.REACT_APP_BOARD_SIZE}px`, height: `${process.env.REACT_APP_BOARD_SIZE}px`,
+      width: `${getEnv('REACT_APP_BOARD_SIZE')}px`, height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
       border: '1px solid black',
       position: 'absolute',
       top: '0px',

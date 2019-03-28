@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+import 'functions/helper';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'normalize.css';

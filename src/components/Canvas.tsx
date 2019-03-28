@@ -51,11 +51,11 @@ class Canvas extends Component<CanvasProps> {
   render() {
     return (
       <canvas ref={this.canvasLoad as any}
-        width={`${process.env.REACT_APP_BOARD_SIZE}px`} height={`${process.env.REACT_APP_BOARD_SIZE}px`}
+        width={`${getEnv('REACT_APP_BOARD_SIZE')}px`} height={`${getEnv('REACT_APP_BOARD_SIZE')}px`}
         style={
           {
-            width: `${process.env.REACT_APP_BOARD_SIZE}px`,
-            height: `${process.env.REACT_APP_BOARD_SIZE}px`,
+            width: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
+            height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
           }
         }
       />

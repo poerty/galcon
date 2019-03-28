@@ -23,11 +23,11 @@ class Timer extends Component<TimerProps> {
       setInterval(() => {
         _addTowerAmount();
         _moveMarine();
-      }, parseInt(process.env.REACT_APP_TIME_INTERVAL || ''));
+      }, parseInt(getEnv('REACT_APP_TIME_INTERVAL')));
 
       setInterval(() => {
         _createMarine();
-      }, parseInt(process.env.REACT_APP_TIME_INTERVAL || '') * 30);
+      }, parseInt(getEnv('REACT_APP_TIME_INTERVAL')) * 30);
     } else {
       _initTimer((new Date()).getTime());
     }

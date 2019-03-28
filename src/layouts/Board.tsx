@@ -7,7 +7,7 @@ import Canvas from 'components/Canvas';
 class Board extends Component {
   render() {
     const style: any = {
-      width: `${process.env.REACT_APP_BOARD_SIZE}px`, height: `${process.env.REACT_APP_BOARD_SIZE}px`,
+      width: `${getEnv('REACT_APP_BOARD_SIZE')}px`, height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
       border: '1px solid black',
       position: 'absolute',
       top: '0px',
