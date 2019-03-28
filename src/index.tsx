@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'normalize.css';
@@ -11,7 +13,6 @@ import thunk from 'redux-thunk';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-require('dotenv').config();
 
 function addUserId({ getState }: { getState: Function }) {
   return (next: Function) => (action: any) => {

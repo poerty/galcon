@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List, Map } from 'immutable'
-import { clear, drawPoints, fixCanvasPixel } from '../functions/canvas';
+import { clear, drawPoints, fixCanvasPixel } from 'functions/canvas';
 
 interface CanvasProps {
   marineIds: List<any>,

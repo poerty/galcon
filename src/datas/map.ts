@@ -1,48 +1,52 @@
-import { fromJS } from 'immutable';
+import { Record, fromJS } from 'immutable';
 import uuidv4 from 'uuidv4';
 
-type User = {
-  color: string
-}
+import Tower from 'models/tower'
 
-type Tower = {
-  ownerId: string,
-  level: number,
-  amount: number,
-  realAmount: number,
-  style: {
-    top: number,
-    left: number,
-  },
-}
+/*
+  type UserType = {
+    color: string
+  }
 
-const towerIds: string[] = [];
-const towerById: { [name: string]: Tower } = {};
-const userIds: string[] = [];
-const userById: { [name: string]: User } = {};
-const colors = ['red', 'blue', 'green', 'yellow'];
-
-for (let i = 1; i < 4; i++) {
-  const towerId = uuidv4();
-  const userId = uuidv4();
-  const amount = 4;
-
-  userIds.push(userId);
-  userById[userId] = {
-    color: colors[i - 1],
-  };
-  towerIds.push(towerId);
-  towerById[towerId] = {
-    ownerId: userId,
-    level: 1,
-    amount,
-    realAmount: amount * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
+  type TowerType = {
+    ownerId: string,
+    level: number,
+    amount: number,
+    realAmount: number,
     style: {
-      top: Math.floor(440 * Math.random()) + 30,
-      left: Math.floor(440 * Math.random()) + 30,
+      top: number,
+      left: number,
     },
-  };
-}
+  }
+
+  const towerIds: string[] = [];
+  const towerById: { [name: string]: TowerType } = {};
+  const userIds: string[] = [];
+  const userById: { [name: string]: UserType } = {};
+  const colors = ['red', 'blue', 'green', 'yellow'];
+
+  for (let i = 1; i < 4; i++) {
+    const towerId = uuidv4();
+    const userId = uuidv4();
+    const amount = 4;
+
+    userIds.push(userId);
+    userById[userId] = {
+      color: colors[i - 1],
+    };
+    towerIds.push(towerId);
+    towerById[towerId] = {
+      ownerId: userId,
+      level: 1,
+      amount,
+      realAmount: amount * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
+      style: {
+        top: Math.floor(440 * Math.random()) + 30,
+        left: Math.floor(440 * Math.random()) + 30,
+      },
+    };
+  }
+*/
 
 const grayId = uuidv4();
 const playerId = uuidv4();
@@ -61,55 +65,55 @@ const module = {
         'f8f02d5b-dc90-49d4-b26d-f824bf406bc4',
       ],
       byId: {
-        'fcdbb3e1-98d4-478a-b074-85b2e04fbf3a': {
+        'fcdbb3e1-98d4-478a-b074-85b2e04fbf3a': new Tower({
           ownerId: grayId,
           level: 1,
           amount: 5,
           realAmount: 5 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 100, left: 100 },
-        },
-        'b62560f6-cf53-487f-8e5a-a38071166364': {
+        }),
+        'b62560f6-cf53-487f-8e5a-a38071166364': new Tower({
           ownerId: grayId,
           level: 1,
           amount: 5,
           realAmount: 5 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 200, left: 400 },
-        },
-        '2cd6a02e-f41b-42c1-966f-bbcf691ff491': {
+        }),
+        '2cd6a02e-f41b-42c1-966f-bbcf691ff491': new Tower({
           ownerId: grayId,
           level: 1,
           amount: 5,
           realAmount: 5 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 150, left: 180 },
-        },
-        '6d6cd718-0bdc-4616-be73-f73cae1c1097': {
+        }),
+        '6d6cd718-0bdc-4616-be73-f73cae1c1097': new Tower({
           ownerId: grayId,
           level: 1,
           amount: 5,
           realAmount: 5 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 400, left: 250 },
-        },
-        '95c780fc-de50-4272-810b-f4d5dc5ac1f0': {
+        }),
+        '95c780fc-de50-4272-810b-f4d5dc5ac1f0': new Tower({
           ownerId: grayId,
           level: 1,
           amount: 5,
           realAmount: 5 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 300, left: 300 },
-        },
-        '386a9abc-966b-4286-9540-b67ad0db69ab': {
+        }),
+        '386a9abc-966b-4286-9540-b67ad0db69ab': new Tower({
           ownerId: grayId,
           level: 1,
           amount: 5,
           realAmount: 5 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 120, left: 200 },
-        },
-        'f8f02d5b-dc90-49d4-b26d-f824bf406bc4': {
+        }),
+        'f8f02d5b-dc90-49d4-b26d-f824bf406bc4': new Tower({
           ownerId: playerId,
           level: 5,
           amount: 100,
           realAmount: 100 * parseInt(process.env.REACT_APP_CALL_RATIO || ''),
           style: { top: 400, left: 400 },
-        },
+        }),
       },
     }),
     users: fromJS({

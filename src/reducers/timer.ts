@@ -1,6 +1,7 @@
-import * as ActionTypes from '../actions/timer';
-
 import { Map } from 'immutable';
+
+import * as ActionTypes from 'actions/timer';
+
 const initialState = Map({
   startedAt: null,
 });

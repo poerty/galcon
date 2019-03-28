@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List, Map } from 'immutable'
 
-import { selectAttackFromTower, selectAttackToTower, upgradeTower } from '../actions/board';
+import { selectAttackFromTower, selectAttackToTower, upgradeTower } from 'actions/board';
 
 interface TowerProps {
   userId: string,
 
-  towerStyle: Map<any, any>,
+  towerStyle: any,
   towerAmount: number,
   towerLevel: number,
   towerOwnerId: string,
@@ -20,7 +20,7 @@ class Tower extends Component<TowerProps> {
   render() {
     const { towerAmount, towerStyle, towerLevel, towerOwnerId } = this.props;
     const { _selectAttackFromTower, _selectAttackToTower, _upgradeTower } = this.props;
-    const style: any = towerStyle.toJS();
+    const style: any = Object.assign({}, towerStyle);
     if (towerOwnerId === this.props.userId) {
       style.background = 'lightyellow';
     }

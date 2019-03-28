@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Map } from 'immutable'
 
-import { initTimer } from '../actions/timer';
-import { addTowerAmount, moveMarine, createMarine } from '../actions/board';
+import { initTimer } from 'actions/timer';
+import { addTowerAmount, moveMarine, createMarine } from 'actions/board';
 
 interface TimerProps {
   timer: Map<any, any>,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Timer from '../hiddens/Timer';
+import Timer from 'hiddens/Timer';
 
 class Hidden extends Component {
   render() {

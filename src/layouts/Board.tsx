@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Towers from './Towers';
-import Canvas from '../components/Canvas';
+import Towers from 'layouts/Towers';
+import Canvas from 'components/Canvas';
 
 class Board extends Component {
   render() {

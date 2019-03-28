@@ -1,15 +1,16 @@
-import * as ActionTypes from '../actions/board';
-
-import towerInfos from '../datas/tower';
-import mapInfos from '../datas/map';
 import { Map, fromJS } from 'immutable';
-
 import Bezier from 'bezier-js';
-
-import { getControllPoints } from '../functions/canvas';
-import { isTowerOwner } from '../functions/checker';
-
 import uuidv4 from 'uuidv4';
+
+import * as ActionTypes from 'actions/board';
+
+import Tower from 'models/tower'
+
+import towerInfos from 'datas/tower';
+import mapInfos from 'datas/map';
+
+import { getControllPoints } from 'functions/canvas';
+import { isTowerOwner } from 'functions/checker';
 
 const towers = mapInfos.map1.towers;
 const initialState = fromJS({
@@ -22,7 +23,6 @@ const initialState = fromJS({
 });
 
 // call timer per 5 second(10000 ms)
-console.log('process.env: ', process.env);
 const callRatio: number = parseInt(process.env['REACT_APP_CALL_RATIO'] || '');
 
 const selectAttackFromTower = (state: any, action: any) => {
@@ -82,23 +82,9 @@ const upgradeTower = (state: any, action: any) => {
   if (!isTowerOwner(tower, action.userId)) {
     return state;
   }
-  const level: number = tower.get('level');
-  const amount = tower.get('amount');
-  const towerInfo = towerInfos[level];
-  // max level exceed
-  if (level >= 5 || !towerInfo.upgradeCost) {
-    return state;
-  }
-  // amount is lower then cost
-  if (towerInfo.upgradeCost && towerInfo.upgradeCost > amount) {
-    return state;
-  }
-  return state
-    .updateIn(['towers', 'byId', towerId, 'level'], (level: number) => level + 1)
-    .updateIn(['towers', 'byId', towerId, 'amount'], (amount: number) => amount - towerInfo.upgradeCost)
-    .updateIn(['towers', 'byId', towerId, 'realAmount'], (realAmount: number) =>
-      realAmount - callRatio * towerInfo.upgradeCost
-    );
+
+  return state.updateIn(['towers', 'byId', towerId],
+    (tower: Tower) => tower.upgrade())
 };
 
 
@@ -108,26 +94,8 @@ const addTowerAmount = (state: any, action: any) => {
 
   return state.withMutations((map: any) => {
     towerIds.forEach((towerId: string) => {
-      // set amount as realAmount divide by callRatio
-      // cause optimize component render time
-      map
-        .updateIn(['towers', 'byId', towerId, 'realAmount'],
-          (realAmount: number) => {
-            const level = state.getIn(['towers', 'byId', towerId, 'level']);
-            const towerInfo = towerInfos[level];
-            const newRealAmount = Math.max(
-              realAmount,
-              Math.min(
-                callRatio * towerInfo.max,
-                realAmount + towerInfo.rate
-              )
-            );
-            return newRealAmount;
-          }
-        )
-        .setIn(['towers', 'byId', towerId, 'amount'],
-          Math.floor(state.getIn(['towers', 'byId', towerId, 'realAmount']) / callRatio)
-        );
+      map.updateIn(['towers', 'byId', towerId],
+        (tower: Tower) => tower.addAmount())
     });
   });
 };
@@ -149,7 +117,7 @@ const moveMarin = (state: any, action: any) => {
       const attackOwnerId = marine.get('ownerId');
       const toTowerId = marine.get('toTowerId');
       const realAmount = newState.getIn(['towers', 'byId', toTowerId, 'realAmount']);
-      let newRealAmount;
+      let newRealAmount: number;
       let newOwnerId = newState.getIn(['towers', 'byId', toTowerId, 'ownerId']);
       if (newOwnerId === attackOwnerId) {
         newRealAmount = realAmount + callRatio;
@@ -164,9 +132,8 @@ const moveMarin = (state: any, action: any) => {
 
       newState = newState
         .setIn(['towers', 'byId', toTowerId, 'ownerId'], newOwnerId)
-        .setIn(['towers', 'byId', toTowerId, 'realAmount'], newRealAmount)
-        .setIn(['towers', 'byId', toTowerId, 'amount'],
-          Math.floor(newState.getIn(['towers', 'byId', toTowerId, 'realAmount']) / callRatio))
+        .updateIn(['towers', 'byId', toTowerId],
+          (tower: Tower) => tower.setAmount(newRealAmount))
         .updateIn(['marines', 'ids'], (ids: any) => ids.filter((id: string) => id !== marineId))
         .deleteIn(['marines', 'byId', marineId]);
     } else {
@@ -208,13 +175,8 @@ const createMarine = (state: any, action: any) => {
       map.updateIn(['attacks', 'byId', attackId, 'amount'], (amount: number) => amount - marineAmount);
 
       // subtract from towerAmount
-      map
-        .updateIn(['towers', 'byId', fromTowerId, 'realAmount'],
-          (realAmount: number) => Math.max(0, realAmount - callRatio * marineAmount)
-        )
-        .setIn(['towers', 'byId', fromTowerId, 'amount'],
-          Math.floor(state.getIn(['towers', 'byId', fromTowerId, 'realAmount']) / callRatio)
-        );
+      map.updateIn(['towers', 'byId', fromTowerId],
+        (tower: Tower) => tower.subAmount(marineAmount));
 
       const startPoint = { x: attack.getIn(['from', 'left']), y: attack.getIn(['from', 'top']) };
       const endPoint = { x: attack.getIn(['to', 'left']), y: attack.getIn(['to', 'top']) };
