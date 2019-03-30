@@ -26,7 +26,7 @@ const defaultTowerProp: TowerProp = {
 };
 
 class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
-  setAmount(newRealAmount: number) {
+  setRealAmount(newRealAmount: number) {
     return this
       .set('realAmount', newRealAmount)
       .set('amount', Math.floor(newRealAmount / callRatio));
@@ -37,12 +37,12 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
       this.realAmount,
       Math.min(callRatio * towerInfo.max, this.realAmount + towerInfo.rate)
     );
-    return this.setAmount(newRealAmount)
+    return this.setRealAmount(newRealAmount)
   }
 
   subAmount(value: number) {
     const newRealAmount = Math.max(0, this.realAmount - callRatio * value);
-    return this.setAmount(newRealAmount)
+    return this.setRealAmount(newRealAmount)
   }
 
   upgrade() {
@@ -59,7 +59,7 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
     const newRealAmount = this.realAmount - callRatio * towerInfo.upgradeCost
     return this
       .update('level', level => level + 1)
-      .setAmount(newRealAmount)
+      .setRealAmount(newRealAmount)
   }
 }
 

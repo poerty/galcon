@@ -1,6 +1,5 @@
 import { Map, fromJS, List } from 'immutable';
 import Bezier from 'bezier-js';
-import uuidv4 from 'uuidv4';
 
 import * as ActionTypes from 'actions/board';
 
@@ -130,7 +129,7 @@ const moveMarin = (state: any, action: any) => {
       newState = newState
         .setIn(['towers', 'byId', toTowerId, 'ownerId'], newOwnerId)
         .updateIn(['towers', 'byId', toTowerId],
-          (tower: Tower) => tower.setAmount(newRealAmount))
+          (tower: Tower) => tower.setRealAmount(newRealAmount))
         .update('marines',
           (marines: ObjectList) => marines.remove(marineId))
     } else {
