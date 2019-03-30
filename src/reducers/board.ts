@@ -11,18 +11,30 @@ import mapInfos from 'datas/map';
 import { getControllPoints } from 'functions/canvas';
 import { isTowerOwner } from 'functions/checker';
 
-const towers = mapInfos.map1.towers;
+const REAL_AMOUNT_RATIO: number = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'))
+
 const initialState = fromJS({
-  towers,
-  attacks: new ObjectList(),
-  marines: new ObjectList(),
+  towers: new ObjectList([], Tower),
+  attacks: new ObjectList([]),
+  marines: new ObjectList([]),
   selected: {
     percentage: 1.0,
   },
 });
 
-// call timer per 5 second(10000 ms)
-const callRatio: number = parseInt(getEnv('REACT_APP_CALL_RATIO'));
+const initBoard = (state: any, action: any) => {
+  const towers = mapInfos.map1.towers;
+
+  return state.withMutations((map: any) => {
+    towers.forEach(tower => {
+      const local: any = tower;
+      local.createdAt = action.now
+      local.updatedAt = action.now;
+      map.update('towers',
+        (towers: ObjectList) => towers.add(local))
+    })
+  })
+}
 
 const selectAttackFromTower = (state: any, action: any) => {
   const fromTowerId = action.towerId;
@@ -51,7 +63,7 @@ const selectAttackToTower = (state: any, action: any) => {
     return state;
   }
 
-  const attack = Map({
+  const attack = {
     ownerId: action.userId,
     amount: Math.floor(fromTower.get('amount') * attackPercentage),
     from: Map({
@@ -65,8 +77,7 @@ const selectAttackToTower = (state: any, action: any) => {
       left: toTower.getIn(['style', 'left']),
     }),
     at: action.now,
-  });
-
+  };
   return state
     .set('selected', Map({ percentage: 1.0 }))
     .update('attacks',
@@ -91,7 +102,7 @@ const addTowerAmount = (state: any, action: any) => {
   return state.withMutations((map: any) => {
     towerIds.forEach((towerId: string) => {
       map.updateIn(['towers', 'byId', towerId],
-        (tower: Tower) => tower.addAmount())
+        (tower: Tower) => tower.addAmount(action.now))
     });
   });
 };
@@ -116,20 +127,20 @@ const moveMarin = (state: any, action: any) => {
       let newRealAmount: number;
       let newOwnerId = newState.getIn(['towers', 'byId', toTowerId, 'ownerId']);
       if (newOwnerId === attackOwnerId) {
-        newRealAmount = realAmount + callRatio;
+        newRealAmount = realAmount + REAL_AMOUNT_RATIO;
       }
-      else if (realAmount < callRatio) {
+      else if (realAmount < REAL_AMOUNT_RATIO) {
         // change owner of tower
-        newRealAmount = callRatio - realAmount;
+        newRealAmount = REAL_AMOUNT_RATIO - realAmount;
         newOwnerId = attackOwnerId;
       } else {
-        newRealAmount = realAmount - callRatio;
+        newRealAmount = realAmount - REAL_AMOUNT_RATIO;
       }
 
       newState = newState
         .setIn(['towers', 'byId', toTowerId, 'ownerId'], newOwnerId)
         .updateIn(['towers', 'byId', toTowerId],
-          (tower: Tower) => tower.setRealAmount(newRealAmount))
+          (tower: Tower) => tower.setRealAmount(newRealAmount, action.now))
         .update('marines',
           (marines: ObjectList) => marines.remove(marineId))
     } else {
@@ -171,7 +182,7 @@ const createMarine = (state: any, action: any) => {
 
       // subtract from towerAmount
       map.updateIn(['towers', 'byId', fromTowerId],
-        (tower: Tower) => tower.subAmount(marineAmount));
+        (tower: Tower) => tower.subAmount(marineAmount, action.now));
 
       const startPoint = { x: attack.getIn(['from', 'left']), y: attack.getIn(['from', 'top']) };
       const endPoint = { x: attack.getIn(['to', 'left']), y: attack.getIn(['to', 'top']) };
@@ -182,12 +193,12 @@ const createMarine = (state: any, action: any) => {
         10
       );
       const distance = Math.sqrt(Math.pow(endPoint.x - startPoint.x, 2) + Math.pow(endPoint.y - startPoint.y, 2));
-      const duration = distance / 30;
+      const duration = distance * 30;
       for (let i = 0; i < marineAmount; i++) {
         const curve = new Bezier(startPoint, controllPoints[i], endPoint);
         // const LUT = curve.getLUT(1000);
         const point = curve.get(0);
-        const marine = Map({
+        const marine = {
           ownerId: attack.get('ownerId'),
           fromTowerId,
           toTowerId,
@@ -200,7 +211,7 @@ const createMarine = (state: any, action: any) => {
           color: 'red',
           at: now,
           duration,
-        })
+        }
         map.update('marines',
           (marines: ObjectList) => marines.add(marine))
       }
@@ -211,6 +222,8 @@ const createMarine = (state: any, action: any) => {
 
 const boardReducer = (state = initialState, action: any) => {
   switch (action.type) {
+    case ActionTypes.INIT_BOARD:
+      return initBoard(state, action)
     case ActionTypes.SELECT_ATTACK_FROM_TOWER:
       return selectAttackFromTower(state, action);
     case ActionTypes.SELECT_ATTACK_TO_TOWER:

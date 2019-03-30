@@ -28,7 +28,9 @@ function addUserId({ getState }: { getState: Function }) {
 function addTimeStamp() {
   return (next: Function) => (action: any) => {
     // add timestamp:now to all action
-    action.now = (new Date()).getTime() / 1000;
+    if (!action.now) {
+      action.now = Math.floor((new Date()).getTime());
+    }
     const returnValue = next(action);
     return returnValue;
   };

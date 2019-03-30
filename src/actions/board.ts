@@ -1,3 +1,11 @@
+export const INIT_BOARD = 'INIT_BOARD';
+export function initBoard(now: string) {
+  return {
+    type: INIT_BOARD,
+    now
+  }
+}
+
 /**
  * for tower component event
  */

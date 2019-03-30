@@ -2,20 +2,34 @@ import { Record, List, Map } from 'immutable';
 import uuidv4 from 'uuidv4';
 
 type ObjectListProp = {
-  ids: List<String>,
-  byId: Map<String, Map<any, any>>
+  ids: List<string>,
+  byId: Map<string, Map<any, any>>,
+  objectClass: any
 }
 
 const defaultObjectListProp: ObjectListProp = {
   ids: List([]),
-  byId: Map({})
+  byId: Map({}),
+  objectClass: Map
 };
 
 class ObjectList extends Record(defaultObjectListProp, 'ObjectList') implements ObjectListProp {
+  constructor(objectList: any[], objectClass: any = Map) {
+    const ids: string[] = []
+    const byId: { [name: string]: Map<any, any> } = {}
+    objectList.forEach((object: any) => {
+      if (!object.id) {
+        object.id = uuidv4()
+      }
+      ids.push(object.id)
+      byId[object.id] = new objectClass(object)
+    })
+    super({ ids: List(ids), byId: Map(byId), objectClass })
+    return this
+  }
+
   add(data: any) {
-    if (!Map.isMap(data)) {
-      data = Map(data)
-    }
+    data = new this.objectClass(data)
     const id = uuidv4();
     return this
       .update('ids', (ids) => ids.push(id))
