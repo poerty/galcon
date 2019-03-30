@@ -42,7 +42,8 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
       .set('amount', Math.floor(newRealAmount / REAL_AMOUNT_RATIO))
       .set('updatedAt', now);
   }
-  addAmount(now: number) {
+
+  updateAmount(now: number) {
     const towerInfo = towerInfos[this.level];
     const newRealAmount = Math.max(
       this.realAmount,

@@ -29,7 +29,9 @@ class ObjectList extends Record(defaultObjectListProp, 'ObjectList') implements 
   }
 
   add(data: any) {
-    data = new this.objectClass(data)
+    if (!(data instanceof this.objectClass)) {
+      data = new this.objectClass(data)
+    }
     const id = uuidv4();
     return this
       .update('ids', (ids) => ids.push(id))

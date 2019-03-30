@@ -35,11 +35,8 @@ class Timer extends Component<TimerProps> {
     tick(() => {
       _addTowerAmount();
       _moveMarine();
-    })
-
-    setInterval(() => {
       _createMarine();
-    }, parseInt(getEnv('REACT_APP_TIME_INTERVAL')) * 30);
+    })
   }
 }
 
