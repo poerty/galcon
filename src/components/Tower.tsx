@@ -29,6 +29,10 @@ class Tower extends Component<TowerProps> {
     if (towerAmount.toString()[0] === '1') {
       noselectStyle.paddingRight = '0.5px';
     }
+    //fuck safari.. does not re render immediately if css not changed
+    if (towerAmount % 2 === 0) {
+      noselectStyle.position = 'absolute'
+    }
     return (
       <div className={`tower tower-${towerLevel}`}
         style={style}
@@ -36,8 +40,9 @@ class Tower extends Component<TowerProps> {
         onMouseDown={() => _selectAttackFromTower()}
         onMouseUp={() => _selectAttackToTower()}
       >
-        <div className='noselect'
-          style={noselectStyle}>{towerAmount}</div>
+        <div className='noselect' style={noselectStyle}>
+          {towerAmount}
+        </div>
       </div>
     );
   }
