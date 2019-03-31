@@ -1,25 +1,31 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { List, Map } from 'immutable'
+import { List, Map } from 'immutable';
 
 import { selectAttackFromTower, selectAttackToTower, upgradeTower } from 'actions/board';
 
 interface TowerProps {
-  userId: string,
+  userId: string;
 
-  towerStyle: any,
-  towerAmount: number,
-  towerLevel: number,
-  towerOwnerId: string,
+  towerStyle: any;
+  towerAmount: number;
+  towerLevel: number;
+  towerOwnerId: string;
 
-  _selectAttackFromTower: Function,
-  _selectAttackToTower: Function,
-  _upgradeTower: Function,
+  _selectAttackFromTower: () => void;
+  _selectAttackToTower: () => void;
+  _upgradeTower: () => void;
 }
 class Tower extends Component<TowerProps> {
-  render() {
+  constructor(props: any) {
+    super(props);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+  }
+
+  public render() {
     const { towerAmount, towerStyle, towerLevel, towerOwnerId } = this.props;
-    const { _selectAttackFromTower, _selectAttackToTower, _upgradeTower } = this.props;
     const style: any = Object.assign({}, towerStyle);
     if (towerOwnerId === this.props.userId) {
       style.background = 'lightyellow';
@@ -29,16 +35,17 @@ class Tower extends Component<TowerProps> {
     if (towerAmount.toString()[0] === '1') {
       noselectStyle.paddingRight = '0.5px';
     }
-    //fuck safari.. does not re render immediately if css not changed
+    // fuck safari.. does not re render immediately if css not changed
     if (towerAmount % 2 === 0) {
-      noselectStyle.position = 'absolute'
+      noselectStyle.position = 'absolute';
     }
     return (
-      <div className={`tower tower-${towerLevel}`}
+      <div
+        className={`tower tower-${towerLevel}`}
         style={style}
-        onDoubleClick={() => _upgradeTower()}
-        onMouseDown={() => _selectAttackFromTower()}
-        onMouseUp={() => _selectAttackToTower()}
+        onDoubleClick={this.handleDoubleClick}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
       >
         <div className='noselect' style={noselectStyle}>
           {towerAmount}
@@ -46,9 +53,20 @@ class Tower extends Component<TowerProps> {
       </div>
     );
   }
+
+  private handleDoubleClick(event: React.MouseEvent<HTMLElement>) {
+    const { _upgradeTower } = this.props;
+    _upgradeTower();
+  }
+  private handleMouseDown(event: React.MouseEvent<HTMLElement>) {
+    const { _selectAttackFromTower } = this.props;
+    _selectAttackFromTower();
+  }
+  private handleMouseUp(event: React.MouseEvent<HTMLElement>) {
+    const { _selectAttackToTower } = this.props;
+    _selectAttackToTower();
+  }
 }
-
-
 
 const mapStateToProps = (state: any, ownProps: any) => {
   return {
@@ -71,5 +89,5 @@ const mapDispatchToProps = (dispatch: any, ownProps: any) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(Tower);

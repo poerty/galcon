@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { List } from 'immutable'
+import { List } from 'immutable';
 
 import Tower from 'components/Tower';
 
 interface TowersProp {
-  towerIds: List<any>
+  towerIds: List<any>;
 }
 class Towers extends Component<TowersProp> {
-  render() {
+  public renderTowers(towerIds: List<any>) {
+    return towerIds.map((towerId: string) => (
+      <Tower key={towerId} id={towerId} />
+    ));
+  }
+  public render() {
     const { towerIds } = this.props;
     const style: any = {
       width: `${getEnv('REACT_APP_BOARD_SIZE')}px`, height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
@@ -18,9 +23,7 @@ class Towers extends Component<TowersProp> {
     };
     return (
       <div style={style}>
-        {towerIds.map((towerId: string) => (
-          <Tower key={towerId} id={towerId} />
-        ))}
+        {this.renderTowers(towerIds)}
       </div>
     );
   }

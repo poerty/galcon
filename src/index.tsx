@@ -1,4 +1,5 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 import 'functions/helper';
 
@@ -15,9 +16,8 @@ import thunk from 'redux-thunk';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-
-function addUserId({ getState }: { getState: Function }) {
-  return (next: Function) => (action: any) => {
+function addUserId({ getState }: { getState: () => any }) {
+  return (next: (action: any) => any) => (action: any) => {
     // add userId to all action
     action.userId = getState().users.get('id');
     const returnValue = next(action);
@@ -26,7 +26,7 @@ function addUserId({ getState }: { getState: Function }) {
 }
 
 function addTimeStamp() {
-  return (next: Function) => (action: any) => {
+  return (next: (action: any) => any) => (action: any) => {
     // add timestamp:now to all action
     if (!action.now) {
       action.now = Math.floor((new Date()).getTime());
@@ -38,14 +38,17 @@ function addTimeStamp() {
 
 const store = createStore(
   galconApp,
-  applyMiddleware(addUserId, addTimeStamp, thunk)
+  applyMiddleware(addUserId, addTimeStamp, thunk),
 );
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
+  (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+  ,
+  document.getElementById('root'),
 );
 
 // If you want your app to work offline and load faster, you can change

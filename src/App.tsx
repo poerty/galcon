@@ -6,7 +6,7 @@ import Board from 'layouts/Board';
 import Hidden from 'layouts/Hidden';
 
 class App extends Component {
-  render() {
+  public render() {
     const style = {
       width: '100%',
       display: 'flex',

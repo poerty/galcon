@@ -5,7 +5,7 @@ import Towers from 'layouts/Towers';
 import Canvas from 'components/Canvas';
 
 class Board extends Component {
-  render() {
+  public render() {
     const style: any = {
       width: `${getEnv('REACT_APP_BOARD_SIZE')}px`, height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
       border: '1px solid black',

@@ -1,7 +1,7 @@
 /**
- * 
- * @param {Immutable.map} tower 
- * @param {string} userId 
+ *
+ * @param {Immutable.map} tower
+ * @param {string} userId
  */
 const isTowerOwner = (tower: any, userId: string) => {
   if (!tower || !userId) {
@@ -13,7 +13,6 @@ const isTowerOwner = (tower: any, userId: string) => {
   }
   return true;
 };
-
 
 export {
   isTowerOwner,

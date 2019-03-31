@@ -1,9 +1,9 @@
 export const INIT_BOARD = 'INIT_BOARD';
-export function initBoard(now: string) {
+export function initBoard(now: number) {
   return {
     type: INIT_BOARD,
-    now
-  }
+    now,
+  };
 }
 
 /**
@@ -36,7 +36,6 @@ export function upgradeTower(towerId: string) {
     towerId,
   };
 }
-
 
 /**
  * for timer component event

@@ -1,0 +1,81 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true
+  },
+  "linterOptions": {
+    "exclude": [
+      "src/serviceWorker.js",
+      "src/setupTests.js"
+    ]
+  },
+  "extends": [
+    "tslint:recommended",
+    "tslint-react"
+  ],
+  "rules": {
+    "prefer-template": true,
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+    "no-console": [
+      false
+    ],
+    "max-len": [
+      true,
+      {
+        "code": 150,
+        "ignoreComments": true
+      }
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ],
+    "ter-indent": [
+      true,
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "linebreak-style": [
+      true,
+      "LF"
+    ],
+    "quotemark": [
+      true,
+      "single",
+      "jsx-single"
+    ],
+    "semicolon": [
+      true,
+      "always"
+    ],
+    "prefer-const": [
+      true,
+      {
+        "destructuring": "any"
+      }
+    ],
+    "object-literal-shorthand": [
+      true,
+      "always"
+    ],
+    "object-literal-sort-keys": [
+      false,
+      {
+        "options": "match-declaration-order"
+      }
+    ],
+    "ordered-imports": false,
+    "interface-name": false
+  }
+}

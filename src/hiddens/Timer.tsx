@@ -1,63 +1,61 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Map } from 'immutable'
+import { Map } from 'immutable';
 
 import { initTimer } from 'actions/timer';
 import { initBoard, addTowerAmount, moveMarine, createMarine } from 'actions/board';
 
 interface TimerProps {
-  timer: Map<any, any>,
+  _initBoard: (now: number) => void;
+  _addTowerAmount: () => void;
+  _moveMarine: () => void;
+  _createMarine: () => void;
 
-  _initBoard: Function,
-  _addTowerAmount: Function,
-  _moveMarine: Function,
-  _createMarine: Function,
-
-  _initTimer: Function,
+  _initTimer: (now: number) => void;
 }
-const tick = (call: Function) => {
-  call()
-  requestAnimationFrame(() => tick(call))
-}
+const tick = (call: () => void) => {
+  call();
+  requestAnimationFrame(() => tick(call));
+};
 class Timer extends Component<TimerProps> {
-  render() {
+  public render() {
     return (<div />);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     const { _initBoard, _addTowerAmount, _moveMarine, _createMarine, _initTimer } = this.props;
 
     const now = Math.floor((new Date()).getTime());
     _initBoard(now);
     _initTimer(now);
 
-    //start requestAnimationFrame
+    // start requestAnimationFrame
     tick(() => {
       _addTowerAmount();
       _moveMarine();
       _createMarine();
-    })
+    });
   }
 }
 
 const mapStateToProps = (state: any) => {
   return {
-    timer: state.timer,
+    // timer: state.timer,
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    _initBoard: (now: string) => dispatch(initBoard(now)),
+    _initBoard: (now: number) => dispatch(initBoard(now)),
     _addTowerAmount: () => dispatch(addTowerAmount()),
     _moveMarine: () => dispatch(moveMarine()),
     _createMarine: () => dispatch(createMarine()),
 
-    _initTimer: (timer: any) => dispatch(initTimer(timer)),
+    _initTimer: (now: number) => dispatch(initTimer(now)),
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(Timer);

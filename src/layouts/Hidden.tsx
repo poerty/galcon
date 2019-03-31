@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Timer from 'hiddens/Timer';
 
 class Hidden extends Component {
-  render() {
+  public render() {
     return (
       <div style={{ display: 'none' }}>
         <Timer />

@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { List, Map } from 'immutable'
+import { List, Map } from 'immutable';
 import { clear, drawPoints, fixCanvasPixel } from 'functions/canvas';
 
 interface CanvasProps {
-  marineIds: List<any>,
-  marines: Map<any, any>,
+  marineIds: List<any>;
+  marines: Map<any, any>;
 }
 class Canvas extends Component<CanvasProps> {
-  canvas?: HTMLCanvasElement;
-  canvasLoad: Function;
-  draw: Function;
+  public canvas?: HTMLCanvasElement;
+  public canvasLoad: (element: HTMLCanvasElement) => void;
+  public draw: (ctx: any, marineIds: any, marines: any) => void;
 
   constructor(props: any) {
     super(props);
@@ -38,7 +38,7 @@ class Canvas extends Component<CanvasProps> {
     };
   }
 
-  shouldComponentUpdate(nextProps: any) {
+  public shouldComponentUpdate(nextProps: any) {
     if (this.canvas) {
       // no re-render dom, only re-draw
       const { marineIds, marines } = nextProps;
@@ -48,16 +48,17 @@ class Canvas extends Component<CanvasProps> {
     return false;
   }
 
-  render() {
+  public render() {
+    const style = {
+      width: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
+      height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
+    };
     return (
-      <canvas ref={this.canvasLoad as any}
-        width={`${getEnv('REACT_APP_BOARD_SIZE')}px`} height={`${getEnv('REACT_APP_BOARD_SIZE')}px`}
-        style={
-          {
-            width: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
-            height: `${getEnv('REACT_APP_BOARD_SIZE')}px`,
-          }
-        }
+      <canvas
+        ref={this.canvasLoad as any}
+        width={`${getEnv('REACT_APP_BOARD_SIZE')}px`}
+        height={`${getEnv('REACT_APP_BOARD_SIZE')}px`}
+        style={style}
       />
     );
   }
@@ -72,5 +73,5 @@ const mapStateToProps = (state: any) => {
 
 export default connect(
   mapStateToProps,
-  null
+  null,
 )(Canvas);

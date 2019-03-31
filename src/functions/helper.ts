@@ -1,14 +1,14 @@
 const getEnv = (name: string) => {
   if (!name || !process.env[name]) {
-    console.log(`process.env.${name} NOT EXIST`)
-    return ''
+    console.log(`process.env.${name} NOT EXIST`);
+    return '';
   }
-  return process.env[name]
-}
+  return process.env[name];
+};
 
-const _global = (window || global) as any;
-_global.getEnv = getEnv
+const localGlobal = (window || global) as any;
+localGlobal.getEnv = getEnv;
 
 export {
   getEnv,
-}
+};

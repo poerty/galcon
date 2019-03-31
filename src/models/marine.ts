@@ -1,18 +1,18 @@
 import { Map, Record } from 'immutable';
 
-type MarineProp = {
-  id: string,
-  ownerId: string,
-  fromTowerId: string,
-  toTowerId: string,
-  curve: any,
-  x: number,
-  y: number,
-  color: string,
-  createdAt: number,
-  updatedAt: number,
-  deletedAt: number,
-  duration: number,
+interface MarineProp {
+  id: string;
+  ownerId: string;
+  fromTowerId: string;
+  toTowerId: string;
+  curve: any;
+  x: number;
+  y: number;
+  color: string;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt: number;
+  duration: number;
 }
 
 const defaultMarineProp: MarineProp = {
@@ -30,13 +30,12 @@ const defaultMarineProp: MarineProp = {
   duration: 0,
 };
 
-
 class Marine extends Record(defaultMarineProp, 'Marine') implements MarineProp {
-  move(now: number) {
+  public move(now: number) {
     const createdAt = this.createdAt;
-    const duration = this.duration
+    const duration = this.duration;
     const percentage = (now - createdAt) / duration;
-    const curve = this.curve
+    const curve = this.curve;
     const point = curve.get(percentage);
     return this
       .set('x', point.x)
