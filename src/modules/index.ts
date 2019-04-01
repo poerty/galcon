@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
-import userReducer from 'reducers/user';
-import timerReducer from 'reducers/timer';
-import boardReducer from 'reducers/board';
+import userReducer from 'modules/user';
+import timerReducer from 'modules/timer';
+import boardReducer from 'modules/board';
 
 const galconApp = combineReducers({
   users: userReducer,

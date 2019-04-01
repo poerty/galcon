@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { List, Map } from 'immutable';
 
-import { selectAttackFromTower, selectAttackToTower, upgradeTower } from 'actions/board';
+import { bindActionCreators } from 'redux';
+
+import { actionCreators as boardActions } from 'modules/board';
 
 interface TowerProps {
+  id: string;
   userId: string;
 
   towerStyle: any;
@@ -12,9 +14,7 @@ interface TowerProps {
   towerLevel: number;
   towerOwnerId: string;
 
-  _selectAttackFromTower: () => void;
-  _selectAttackToTower: () => void;
-  _upgradeTower: () => void;
+  BoardActions: typeof boardActions;
 }
 class Tower extends Component<TowerProps> {
   constructor(props: any) {
@@ -55,16 +55,16 @@ class Tower extends Component<TowerProps> {
   }
 
   private handleDoubleClick(event: React.MouseEvent<HTMLElement>) {
-    const { _upgradeTower } = this.props;
-    _upgradeTower();
+    const { BoardActions, id } = this.props;
+    BoardActions.upgradeTower({ towerId: id });
   }
   private handleMouseDown(event: React.MouseEvent<HTMLElement>) {
-    const { _selectAttackFromTower } = this.props;
-    _selectAttackFromTower();
+    const { BoardActions, id } = this.props;
+    BoardActions.selectAttackFromTower({ towerId: id });
   }
   private handleMouseUp(event: React.MouseEvent<HTMLElement>) {
-    const { _selectAttackToTower } = this.props;
-    _selectAttackToTower();
+    const { BoardActions, id } = this.props;
+    BoardActions.selectAttackToTower({ towerId: id });
   }
 }
 
@@ -81,9 +81,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any, ownProps: any) => {
   return {
-    _selectAttackFromTower: () => dispatch(selectAttackFromTower(ownProps.id)),
-    _selectAttackToTower: () => dispatch(selectAttackToTower(ownProps.id)),
-    _upgradeTower: () => dispatch(upgradeTower(ownProps.id)),
+    BoardActions: bindActionCreators(boardActions, dispatch),
   };
 };
 

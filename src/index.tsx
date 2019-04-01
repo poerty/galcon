@@ -10,7 +10,7 @@ import './index.css';
 
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import galconApp from './reducers';
+import galconApp from './modules';
 import thunk from 'redux-thunk';
 
 import App from './App';

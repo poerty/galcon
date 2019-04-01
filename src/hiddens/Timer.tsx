@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Map } from 'immutable';
+import { bindActionCreators } from 'redux';
 
-import { initTimer } from 'actions/timer';
-import { initBoard, addTowerAmount, moveMarine, createMarine } from 'actions/board';
+import { actionCreators as boardActions } from 'modules/board';
+import { actionCreators as timerActions } from 'modules/timer';
 
 interface TimerProps {
-  _initBoard: (now: number) => void;
-  _addTowerAmount: () => void;
-  _moveMarine: () => void;
-  _createMarine: () => void;
-
-  _initTimer: (now: number) => void;
+  BoardActions: typeof boardActions;
+  TimerActions: typeof timerActions;
 }
 const tick = (call: () => void) => {
   call();
@@ -23,35 +19,31 @@ class Timer extends Component<TimerProps> {
   }
 
   public componentDidMount() {
-    const { _initBoard, _addTowerAmount, _moveMarine, _createMarine, _initTimer } = this.props;
+    const { BoardActions, TimerActions } = this.props;
 
     const now = Math.floor((new Date()).getTime());
-    _initBoard(now);
-    _initTimer(now);
+    BoardActions.initBoard({ now });
+    TimerActions.initTimer(now);
 
     // start requestAnimationFrame
     tick(() => {
-      _addTowerAmount();
-      _moveMarine();
-      _createMarine();
+      BoardActions.addTowerAmount();
+      BoardActions.moveMarine();
+      BoardActions.createMarine();
     });
   }
 }
 
 const mapStateToProps = (state: any) => {
   return {
-    // timer: state.timer,
+    timer: state.timer,
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    _initBoard: (now: number) => dispatch(initBoard(now)),
-    _addTowerAmount: () => dispatch(addTowerAmount()),
-    _moveMarine: () => dispatch(moveMarine()),
-    _createMarine: () => dispatch(createMarine()),
-
-    _initTimer: (now: number) => dispatch(initTimer(now)),
+    BoardActions: bindActionCreators(boardActions, dispatch),
+    TimerActions: bindActionCreators(timerActions, dispatch),
   };
 };
 
