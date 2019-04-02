@@ -1,9 +1,9 @@
 import { Map, fromJS } from 'immutable';
 
+import ObjectList from 'models/objectList';
 import Tower from 'models/tower';
 import Attack from 'models/attack';
 import Marine from 'models/marine';
-import ObjectList from 'models/objectList';
 
 import mapInfos from 'datas/map';
 

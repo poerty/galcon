@@ -32,7 +32,7 @@ class ObjectList extends Record(defaultObjectListProp, 'ObjectList') implements 
     if (!(data instanceof this.objectClass)) {
       data = new this.objectClass(data);
     }
-    const id = uuidv4();
+    const id = data.id || uuidv4();
     return this
       .update('ids', (ids) => ids.push(id))
       .setIn(['byId', id], data);
