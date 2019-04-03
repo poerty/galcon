@@ -2,7 +2,7 @@ import { Record } from 'immutable';
 
 import towerInfos from 'datas/tower';
 const REAL_AMOUNT_RATIO: number = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'), 10);
-
+const MAX_TOWER_LEVEL: number = parseInt(getEnv('REACT_APP_MAX_TOWER_LEVEL'), 10);
 interface TowerProp {
   id: string;
   ownerId: string;
@@ -42,6 +42,11 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
       .set('updatedAt', now);
   }
 
+  // for init
+  public setAmount(newAmount: number, now: number) {
+    return this.setRealAmount(newAmount * REAL_AMOUNT_RATIO, now);
+  }
+
   public updateAmount(now: number) {
     const towerInfo = towerInfos[this.level];
     const newRealAmount = Math.max(
@@ -62,7 +67,7 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
   public upgrade() {
     const towerInfo = towerInfos[this.level];
     // max level exceed
-    if (this.level >= 5 || !towerInfo.upgradeCost) {
+    if (this.level >= MAX_TOWER_LEVEL || !towerInfo.upgradeCost) {
       return this;
     }
     // amount is lower then cost

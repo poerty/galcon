@@ -46,12 +46,21 @@ class Tower extends Component<TowerProps> {
         onDoubleClick={this.handleDoubleClick}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
+        data-testid='tower'
       >
-        <div className='noselect' style={noselectStyle}>
+        <div
+          className='noselect'
+          style={noselectStyle}
+          data-testid='towerAmount'
+        >
           {towerAmount}
         </div>
       </div>
     );
+  }
+  public handleMouseUp(event: React.MouseEvent<HTMLElement>) {
+    const { BoardActions, id } = this.props;
+    BoardActions.selectAttackToTower({ towerId: id });
   }
 
   private handleDoubleClick(event: React.MouseEvent<HTMLElement>) {
@@ -61,10 +70,6 @@ class Tower extends Component<TowerProps> {
   private handleMouseDown(event: React.MouseEvent<HTMLElement>) {
     const { BoardActions, id } = this.props;
     BoardActions.selectAttackFromTower({ towerId: id });
-  }
-  private handleMouseUp(event: React.MouseEvent<HTMLElement>) {
-    const { BoardActions, id } = this.props;
-    BoardActions.selectAttackToTower({ towerId: id });
   }
 }
 

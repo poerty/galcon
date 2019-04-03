@@ -16,7 +16,7 @@ import galconApp from './modules';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-const store = createStore(galconApp, applyMiddleware(...middlewares));
+const store = createStore(galconApp, {}, applyMiddleware(...middlewares));
 
 ReactDOM.render(
   (
