@@ -1,48 +1,76 @@
 import { Record, List, Map } from 'immutable';
 import uuidv4 from 'uuidv4';
 
-interface ObjectListProp {
+type Constructor<T> = new (...args: any[]) => T;
+
+// for Immutable Record (functional type is not complete I guess)
+interface ObjectListProp<T> {
   ids: List<string>;
-  byId: Map<string, Map<any, any>>;
-  objectClass: any;
+  byId: Map<string, T>;
+
+}
+function getDefaultObjectListProp<T>(Base: Constructor<T>): ObjectListProp<T> {
+  return {
+    ids: List([]),
+    byId: Map({}),
+  };
+}
+interface ObjectList<T> extends ObjectListProp<T> {
+  add(data: any): ObjectList<T>;
+  remove(id: string): ObjectList<T>;
+  getById(id: string): T;
 }
 
-const defaultObjectListProp: ObjectListProp = {
-  ids: List([]),
-  byId: Map({}),
-  objectClass: Map,
-};
+function ObjectList<T>(Base: Constructor<T>) {
+  class ObjectListClass
+    extends Record(getDefaultObjectListProp(Base)) implements ObjectListProp<T> {
 
-class ObjectList extends Record(defaultObjectListProp, 'ObjectList') implements ObjectListProp {
-  public constructor(objectList: any[], objectClass: any = Map) {
-    const ids: string[] = [];
-    const byId: { [name: string]: Map<any, any> } = {};
-    objectList.forEach((object: any) => {
-      if (!object.id) {
-        object.id = uuidv4();
-      }
-      ids.push(object.id);
-      byId[object.id] = new objectClass(object);
-    });
-    super({ ids: List(ids), byId: Map(byId), objectClass });
-    return this;
-  }
-
-  public add(data: any) {
-    if (!(data instanceof this.objectClass)) {
-      data = new this.objectClass(data);
+    constructor(objectList: any[]) {
+      super({ ids: List([]), byId: Map([]) });
+      const ids: string[] = [];
+      const byId: { [name: string]: T } = {};
+      objectList.forEach((object: any) => {
+        if (!object.id) {
+          object.id = uuidv4();
+        }
+        ids.push(object.id);
+        byId[object.id] = new Base(object);
+      });
+      this.add = this.add.bind(this);
+      this.remove = this.remove.bind(this);
+      this.getById = this.getById.bind(this);
+      return this
+        .set('ids', List(ids))
+        .set('byId', Map(byId));
     }
-    const id = data.id || uuidv4();
-    return this
-      .update('ids', (ids) => ids.push(id))
-      .setIn(['byId', id], data);
-  }
 
-  public remove(id: string) {
-    return this
-      .update('ids', (ids) => ids.filter((el) => el !== id))
-      .deleteIn(['byId', id]);
-  }
+    public add(data: any) {
+      if (!(data instanceof Base)) {
+        data = new Base(data);
+      }
+      const id = data.id || uuidv4();
+      return this
+        .update('ids', (ids) => ids.push(id))
+        .setIn(['byId', id], data);
+    }
+
+    public remove(id: string) {
+      return this
+        .update('ids', (ids) => ids.filter((el) => el !== id))
+        .deleteIn(['byId', id]);
+    }
+
+    public getById(id: string) {
+      const byId = this.get('byId');
+      const object = byId.get(id);
+      if (!object) {
+        throw new Error('OBJECT_NOT_EXIST');
+      }
+      return object;
+    }
+  };
+
+  return ObjectListClass
 }
 
 export default ObjectList;

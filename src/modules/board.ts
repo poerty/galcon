@@ -1,4 +1,4 @@
-import { Map, fromJS } from 'immutable';
+import { Map, Record } from 'immutable';
 
 import ObjectList from 'models/objectList';
 import Tower from 'models/tower';
@@ -12,6 +12,12 @@ import { createAction, handleActions, Action } from 'redux-actions';
 
 const REAL_AMOUNT_RATIO = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'), 10);
 const MAX_ATTACK_SIZE = parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'), 10);
+
+class TowerList extends ObjectList(Tower) { };
+class AttackList extends ObjectList(Attack) { };
+class MarineList extends ObjectList(Marine) { };
+
+const attacks = new AttackList([])
 
 // Actions
 // init board(adding tower)
@@ -48,27 +54,48 @@ interface IAction<T> extends Action<T> {
   now?: number;
 }
 
+
 // Reducer initialState
-const initialState = fromJS({
-  towers: new ObjectList([], Tower),
-  attacks: new ObjectList([], Attack),
-  marines: new ObjectList([], Marine),
-  selected: {
+// const initialState = Record({
+//   towers: new TowerList([]),
+//   attacks: new AttackList([]),
+//   marines: new MarineList([]),
+//   selected: {
+//     percentage: 1.0,
+//   },
+// })();
+
+interface BoardStateProp {
+  towers: InstanceType<typeof TowerList>;
+  attacks: InstanceType<typeof AttackList>;
+  marines: InstanceType<typeof MarineList>;
+  selected: any;
+}
+
+const defaultBoardStateProp: BoardStateProp = {
+  towers: new TowerList([]),
+  attacks: new AttackList([]),
+  marines: new MarineList([]),
+  selected: Map({
     percentage: 1.0,
-  },
-});
+  }),
+};
+
+class BoardState extends Record(defaultBoardStateProp, 'BoardState') implements BoardState { }
+const initialState = new BoardState()
+
 // Reducer
-export default handleActions<any, any>({
+export default handleActions<BoardState, any>({
   [INIT_BOARD]: (state, action: IAction<INIT_BOARD_PAYLOAD>) => {
     const towers = mapInfos.map1.towers;
 
-    return state.withMutations((map: any) => {
+    return state.withMutations((map: BoardState) => {
       towers.forEach((tower) => {
         const local: any = tower;
         local.createdAt = action.payload.now;
         local.updatedAt = action.payload.now;
         map.update('towers',
-          (ele: ObjectList) => ele.add(local));
+          (ele) => ele.add(local));
       });
     });
   },
@@ -118,7 +145,7 @@ export default handleActions<any, any>({
     return state
       .set('selected', Map({ percentage: 1.0 }))
       .update('attacks',
-        (attacks: ObjectList) => attacks.add(attack));
+        (attacks) => attacks.add(attack));
   },
   [UPGRADE_TOWER]: (state, action: IAction<UPGRADE_TOWER_PAYLOAD>) => {
     const towerId = action.payload.towerId;
@@ -133,7 +160,7 @@ export default handleActions<any, any>({
   [ADD_TOWER_AMOUNT]: (state, action: IAction<ADD_TOWER_AMOUNT_PAYLOAD>) => {
     const towerIds = state.getIn(['towers', 'ids']);
 
-    return state.withMutations((map: any) => {
+    return state.withMutations((map: BoardState) => {
       towerIds.forEach((towerId: string) => {
         map.updateIn(['towers', 'byId', towerId],
           (ele: Tower) => ele.updateAmount(action.now!));
@@ -175,7 +202,7 @@ export default handleActions<any, any>({
           .updateIn(['towers', 'byId', toTowerId],
             (tower: Tower) => tower.setRealAmount(newRealAmount, action.now!))
           .update('marines',
-            (marines: ObjectList) => marines.remove(marineId));
+            (marines) => marines.remove(marineId));
       }
     });
     return newState;
@@ -183,7 +210,7 @@ export default handleActions<any, any>({
   [CREATE_MARINE]: (state, action: IAction<CREATE_MARINE_PAYLOAD>) => {
     const attackIds = state.getIn(['attacks', 'ids']);
 
-    return state.withMutations((map: any) => {
+    return state.withMutations((map: BoardState) => {
       attackIds.forEach((attackId: string) => {
         const attack = state.getIn(['attacks', 'byId', attackId]);
         const fromTowerId = attack.getIn(['from', 'towerId']);
@@ -200,7 +227,7 @@ export default handleActions<any, any>({
           marines.forEach((marine: any) => {
             marineCreatedAt = Math.max(marineCreatedAt, marine.createdAt);
             map.update('marines',
-              (ele: ObjectList) => ele.add(marine));
+              (ele) => ele.add(marine));
           });
           // subtract from attackAmount & set last marine created time
           map.updateIn(['attacks', 'byId', attackId],
@@ -213,7 +240,7 @@ export default handleActions<any, any>({
           // if attack is finished, delete it
           if (map.getIn(['attacks', 'byId', attackId, 'amount']) === 0) {
             map.update('attacks',
-              (attacks: ObjectList) => attacks.remove(attackId));
+              (attacks) => attacks.remove(attackId));
           }
         }
       });
