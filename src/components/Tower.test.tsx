@@ -5,8 +5,7 @@ import uuidv4 from 'uuidv4';
 
 import { renderWithRedux } from 'functions/testHelper';
 
-import ObjectList from 'models/objectList';
-import TowerModel from 'models/tower';
+import TowerModel, { TowerList } from 'models/tower';
 
 import Tower from 'components/Tower';
 
@@ -32,7 +31,7 @@ describe('/Components : Tower', () => {
 
   test('renders without crash', () => {
     const initialState = {
-      board: fromJS({ towers: new ObjectList([initialTower], TowerModel) }),
+      board: fromJS({ towers: new TowerList([initialTower]) }),
       users: fromJS({ id: userId }),
     };
     const { getByTestId } = renderWithRedux(
@@ -53,7 +52,7 @@ describe('/Components : Tower', () => {
     test('it should set attack from tower when mouseDown', () => {
       const initialState = {
         board: fromJS({
-          towers: new ObjectList([initialTower], TowerModel),
+          towers: new TowerList([initialTower]),
           selected: { percentage: 1.0 },
         }),
         users: fromJS({ id: userId }),
@@ -81,7 +80,7 @@ describe('/Components : Tower', () => {
       const amount0Tower = initialTower.setAmount(0, now);
 
       const initialState = {
-        board: fromJS({ towers: new ObjectList([amount0Tower], TowerModel) }),
+        board: fromJS({ towers: new TowerList([amount0Tower]) }),
         users: fromJS({ id: userId }),
       };
       const { getByTestId } = renderWithRedux(
@@ -103,7 +102,7 @@ describe('/Components : Tower', () => {
 
     test('it should upgrade tower with enough amount', () => {
       const initialState = {
-        board: fromJS({ towers: new ObjectList([initialTower], TowerModel) }),
+        board: fromJS({ towers: new TowerList([initialTower]) }),
         users: fromJS({ id: userId }),
       };
       const { getByTestId } = renderWithRedux(

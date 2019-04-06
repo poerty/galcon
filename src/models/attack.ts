@@ -1,6 +1,8 @@
 import { Record } from 'immutable';
 import Bezier from 'bezier-js';
 
+import ObjectList from 'models/objectList';
+
 import { getControllPoints } from 'functions/canvas';
 
 const MAX_ATTACK_SIZE = parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'), 10);
@@ -103,3 +105,4 @@ class Attack extends Record(defaultAttackProp, 'Attack') implements AttackProp {
 }
 
 export default Attack;
+export class AttackList extends ObjectList(Attack) { };

@@ -1,6 +1,5 @@
-import { Map, Record } from 'immutable';
+import { Map } from 'immutable';
 
-import ObjectList from 'models/objectList';
 import Tower from 'models/tower';
 import Attack from 'models/attack';
 import Marine from 'models/marine';
@@ -13,11 +12,7 @@ import { createAction, handleActions, Action } from 'redux-actions';
 const REAL_AMOUNT_RATIO = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'), 10);
 const MAX_ATTACK_SIZE = parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'), 10);
 
-class TowerList extends ObjectList(Tower) { };
-class AttackList extends ObjectList(Attack) { };
-class MarineList extends ObjectList(Marine) { };
-
-const attacks = new AttackList([])
+import BoardState from 'modules/board.state'
 
 // Actions
 // init board(adding tower)
@@ -53,36 +48,6 @@ interface IAction<T> extends Action<T> {
   userId?: string;
   now?: number;
 }
-
-
-// Reducer initialState
-// const initialState = Record({
-//   towers: new TowerList([]),
-//   attacks: new AttackList([]),
-//   marines: new MarineList([]),
-//   selected: {
-//     percentage: 1.0,
-//   },
-// })();
-
-interface BoardStateProp {
-  towers: InstanceType<typeof TowerList>;
-  attacks: InstanceType<typeof AttackList>;
-  marines: InstanceType<typeof MarineList>;
-  selected: any;
-}
-
-const defaultBoardStateProp: BoardStateProp = {
-  towers: new TowerList([]),
-  attacks: new AttackList([]),
-  marines: new MarineList([]),
-  selected: Map({
-    percentage: 1.0,
-  }),
-};
-
-class BoardState extends Record(defaultBoardStateProp, 'BoardState') implements BoardState { }
-const initialState = new BoardState()
 
 // Reducer
 export default handleActions<BoardState, any>({
@@ -246,7 +211,7 @@ export default handleActions<BoardState, any>({
       });
     });
   },
-}, initialState);
+}, new BoardState());
 
 // Action Creators
 export const actionCreators = {

@@ -21,7 +21,7 @@ class Tower extends Component<TowerProps> {
     const { BoardActions, id } = this.props;
     BoardActions.selectAttackToTower({ towerId: id });
   }
-  
+
   private handleDoubleClick() {
     const { BoardActions, id } = this.props;
     BoardActions.upgradeTower({ towerId: id });

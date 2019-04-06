@@ -1,5 +1,7 @@
 import { Record } from 'immutable';
 
+import ObjectList from 'models/objectList';
+
 interface MarineProp {
   id: string;
   ownerId: string;
@@ -45,3 +47,4 @@ class Marine extends Record(defaultMarineProp, 'Marine') implements MarineProp {
 }
 
 export default Marine;
+export class MarineList extends ObjectList(Marine) { };

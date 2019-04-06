@@ -1,5 +1,7 @@
 import { Record } from 'immutable';
 
+import ObjectList from 'models/objectList';
+
 import towerInfos from 'datas/tower';
 const REAL_AMOUNT_RATIO: number = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'), 10);
 const MAX_TOWER_LEVEL: number = parseInt(getEnv('REACT_APP_MAX_TOWER_LEVEL'), 10);
@@ -84,3 +86,4 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
 }
 
 export default Tower;
+export class TowerList extends ObjectList(Tower) { };
