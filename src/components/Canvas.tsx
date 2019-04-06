@@ -12,7 +12,7 @@ class Canvas extends Component<CanvasProps> {
   public canvasLoad: (element: HTMLCanvasElement) => void;
   public draw: (ctx: any, marineIds: any, marines: any) => void;
 
-  constructor(props: any) {
+  public constructor(props: any) {
     super(props);
 
     // this.canvas = React.createRef();

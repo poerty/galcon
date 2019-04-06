@@ -1,4 +1,4 @@
-import { Map, Record } from 'immutable';
+import { Record } from 'immutable';
 import Bezier from 'bezier-js';
 
 import { getControllPoints } from 'functions/canvas';
@@ -11,14 +11,14 @@ interface AttackProp {
   ownerId: string;
   amount: number;
   from: {
-    towerId: string,
-    top: number,
-    left: number,
+    towerId: string;
+    top: number;
+    left: number;
   };
   to: {
-    towerId: string,
-    top: number,
-    left: number,
+    towerId: string;
+    top: number;
+    left: number;
   };
   createdAt: number;
   updatedAt: number;

@@ -17,7 +17,21 @@ interface TowerProps {
   BoardActions: typeof boardActions;
 }
 class Tower extends Component<TowerProps> {
-  constructor(props: any) {
+  public handleMouseUp() {
+    const { BoardActions, id } = this.props;
+    BoardActions.selectAttackToTower({ towerId: id });
+  }
+  
+  private handleDoubleClick() {
+    const { BoardActions, id } = this.props;
+    BoardActions.upgradeTower({ towerId: id });
+  }
+  private handleMouseDown() {
+    const { BoardActions, id } = this.props;
+    BoardActions.selectAttackFromTower({ towerId: id });
+  }
+
+  public constructor(props: any) {
     super(props);
     this.handleDoubleClick = this.handleDoubleClick.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -58,19 +72,6 @@ class Tower extends Component<TowerProps> {
       </div>
     );
   }
-  public handleMouseUp(event: React.MouseEvent<HTMLElement>) {
-    const { BoardActions, id } = this.props;
-    BoardActions.selectAttackToTower({ towerId: id });
-  }
-
-  private handleDoubleClick(event: React.MouseEvent<HTMLElement>) {
-    const { BoardActions, id } = this.props;
-    BoardActions.upgradeTower({ towerId: id });
-  }
-  private handleMouseDown(event: React.MouseEvent<HTMLElement>) {
-    const { BoardActions, id } = this.props;
-    BoardActions.selectAttackFromTower({ towerId: id });
-  }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
@@ -84,7 +85,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: any, ownProps: any) => {
+const mapDispatchToProps = (dispatch: any) => {
   return {
     BoardActions: bindActionCreators(boardActions, dispatch),
   };

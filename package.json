@@ -12,6 +12,8 @@
     "@types/react-redux": "^7.0.5",
     "@types/redux-actions": "^2.6.0",
     "@types/uuidv4": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "bezier-js": "^2.4.0",
     "immutable": "^4.0.0-rc.12",
     "jest-canvas-mock": "^2.0.0-beta.1",

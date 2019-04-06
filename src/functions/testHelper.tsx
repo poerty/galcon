@@ -9,8 +9,8 @@ import middlewares from 'middlewares';
 export function renderWithRedux(
   ui: React.ReactElement<any>,
   options?: {
-    initialState?: any,
-    store?: Store<any, AnyAction> & { dispatch: {} },
+    initialState?: any;
+    store?: Store<any, AnyAction> & { dispatch: {} };
   },
 ) {
   const initialState = options && options.initialState ? options.initialState : {};

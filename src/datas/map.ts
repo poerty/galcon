@@ -1,7 +1,6 @@
-import { Record, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 import uuidv4 from 'uuidv4';
 
-import Tower from 'models/tower';
 const REAL_AMOUNT_RATIO: number = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'), 10);
 
 /*

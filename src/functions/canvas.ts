@@ -32,8 +32,8 @@ const fixCanvasPixel = (canvas: any) => {
 
 const getControllPoints = (
   amount: number,
-  startPoint: { x: number, y: number },
-  endPoint: { x: number, y: number },
+  startPoint: { x: number; y: number },
+  endPoint: { x: number; y: number },
   distance: number) => {
   const yDistance = endPoint.y - startPoint.y;
   const xDistance = endPoint.x - startPoint.x;

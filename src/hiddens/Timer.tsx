@@ -14,23 +14,24 @@ const tick = (call: () => void) => {
   requestAnimationFrame(() => tick(call));
 };
 class Timer extends Component<TimerProps> {
-  public render() {
-    return (<div />);
-  }
-
+  
   public componentDidMount() {
     const { BoardActions, TimerActions } = this.props;
-
+    
     const now = Math.floor((new Date()).getTime());
     BoardActions.initBoard({ now });
     TimerActions.initTimer(now);
-
+    
     // start requestAnimationFrame
     tick(() => {
       BoardActions.addTowerAmount();
       BoardActions.moveMarine();
       BoardActions.createMarine();
     });
+  }
+  
+  public render() {
+    return (<div />);
   }
 }
 

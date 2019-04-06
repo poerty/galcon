@@ -1,6 +1,5 @@
 import { Map } from 'immutable';
 import { createAction, handleActions, Action } from 'redux-actions';
-import { any } from 'prop-types';
 
 // Actions
 const INIT_TIMER = 'galcon/INIT_TIMER';

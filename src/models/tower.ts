@@ -10,8 +10,8 @@ interface TowerProp {
   amount: number;
   realAmount: number;
   style: {
-    top: number,
-    left: number,
+    top: number;
+    left: number;
   };
   createdAt: number;
   updatedAt: number;

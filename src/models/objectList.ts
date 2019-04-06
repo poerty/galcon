@@ -14,7 +14,7 @@ const defaultObjectListProp: ObjectListProp = {
 };
 
 class ObjectList extends Record(defaultObjectListProp, 'ObjectList') implements ObjectListProp {
-  constructor(objectList: any[], objectClass: any = Map) {
+  public constructor(objectList: any[], objectClass: any = Map) {
     const ids: string[] = [];
     const byId: { [name: string]: Map<any, any> } = {};
     objectList.forEach((object: any) => {
