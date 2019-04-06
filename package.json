@@ -12,8 +12,6 @@
     "@types/react-redux": "^7.0.5",
     "@types/redux-actions": "^2.6.0",
     "@types/uuidv4": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^1.6.0",
-    "@typescript-eslint/parser": "^1.6.0",
     "bezier-js": "^2.4.0",
     "immutable": "^4.0.0-rc.12",
     "jest-canvas-mock": "^2.0.0-beta.1",
@@ -36,7 +34,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "npx eslint --ext .js,.jsx,.ts,.tsx ./"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,6 +47,10 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.12.4",
     "tslint": "^5.14.0",
     "tslint-react": "^4.0.0",
     "typescript-eslint-parser": "^22.0.0"

@@ -160,7 +160,7 @@
       false
     ],
     "@typescript-eslint/interface-name-prefix": [
-      false
+      "never"
     ],
     "@typescript-eslint/no-explicit-any": [
       false

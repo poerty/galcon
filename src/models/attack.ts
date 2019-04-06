@@ -105,4 +105,4 @@ class Attack extends Record(defaultAttackProp, 'Attack') implements AttackProp {
 }
 
 export default Attack;
-export class AttackList extends ObjectList(Attack) { };
+export class AttackList extends ObjectList(Attack) { }

@@ -12,7 +12,7 @@ import { createAction, handleActions, Action } from 'redux-actions';
 const REAL_AMOUNT_RATIO = parseInt(getEnv('REACT_APP_REALAMOUNT_RATIO'), 10);
 const MAX_ATTACK_SIZE = parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'), 10);
 
-import BoardState from 'modules/board.state'
+import BoardState from 'modules/board.state';
 
 // Actions
 // init board(adding tower)

@@ -86,4 +86,4 @@ class Tower extends Record(defaultTowerProp, 'Tower') implements TowerProp {
 }
 
 export default Tower;
-export class TowerList extends ObjectList(Tower) { };
+export class TowerList extends ObjectList(Tower) { }

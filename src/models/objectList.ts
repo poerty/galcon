@@ -9,7 +9,7 @@ interface ObjectListProp<T> {
   byId: Map<string, T>;
 
 }
-function getDefaultObjectListProp<T>(Base: Constructor<T>): ObjectListProp<T> {
+function getDefaultObjectListProp<T>(): ObjectListProp<T> {
   return {
     ids: List([]),
     byId: Map({}),
@@ -23,9 +23,9 @@ interface ObjectList<T> extends ObjectListProp<T> {
 
 function ObjectList<T>(Base: Constructor<T>) {
   class ObjectListClass
-    extends Record(getDefaultObjectListProp(Base)) implements ObjectListProp<T> {
+    extends Record(getDefaultObjectListProp<T>()) implements ObjectListProp<T> {
 
-    constructor(objectList: any[]) {
+    public constructor(objectList: any[]) {
       super({ ids: List([]), byId: Map([]) });
       const ids: string[] = [];
       const byId: { [name: string]: T } = {};
@@ -68,9 +68,9 @@ function ObjectList<T>(Base: Constructor<T>) {
       }
       return object;
     }
-  };
+  }
 
-  return ObjectListClass
+  return ObjectListClass;
 }
 
 export default ObjectList;

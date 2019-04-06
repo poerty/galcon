@@ -47,4 +47,4 @@ class Marine extends Record(defaultMarineProp, 'Marine') implements MarineProp {
 }
 
 export default Marine;
-export class MarineList extends ObjectList(Marine) { };
+export class MarineList extends ObjectList(Marine) { }
