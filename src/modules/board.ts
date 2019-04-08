@@ -14,42 +14,40 @@ const MAX_ATTACK_SIZE = parseInt(getEnv('REACT_APP_MAX_ATTACK_SIZE'), 10);
 
 import BoardState from 'modules/board.state';
 
-// Actions
+// *Actions & Actions payload type
 // init board(adding tower)
 export const INIT_BOARD = 'INIT_BOARD';
+type INIT_BOARD_PAYLOAD = { now: number };
 // select from tower for attack
 export const SELECT_ATTACK_FROM_TOWER = 'SELECT_ATTACK_FROM_TOWER';
+type SELECT_ATTACK_FROM_TOWER_PAYLOAD = { towerId: string };
 // select to tower for attack & generate new attack
 export const SELECT_ATTACK_TO_TOWER = 'SELECT_ATTACK_TO_TOWER';
+type SELECT_ATTACK_TO_TOWER_PAYLOAD = { towerId: string };
 // upgrade tower level
 export const UPGRADE_TOWER = 'UPGRADE_TOWER';
+type UPGRADE_TOWER_PAYLOAD = { towerId: string };
 // add tower's amount by level rate
 export const ADD_TOWER_AMOUNT = 'ADD_TOWER_AMOUNT';
+type ADD_TOWER_AMOUNT_PAYLOAD = void;
 // move marines
 export const MOVE_MARINE = 'MOVE_MARINE';
+type MOVE_MARINE_PAYLOAD = void;
 // generate marine of attacks & restract from tower amount
 export const CREATE_MARINE = 'CREATE_MARINE';
-
-// Actions payload type
-type INIT_BOARD_PAYLOAD = { now: number };
-type SELECT_ATTACK_FROM_TOWER_PAYLOAD = { towerId: string };
-type SELECT_ATTACK_TO_TOWER_PAYLOAD = { towerId: string };
-type UPGRADE_TOWER_PAYLOAD = { towerId: string };
-type ADD_TOWER_AMOUNT_PAYLOAD = void;
-type MOVE_MARINE_PAYLOAD = void;
 type CREATE_MARINE_PAYLOAD = void;
 
+
 // add field by middleware
+type MIDDLEWARE_PAYLOAD = { now: number; userId: string }
 interface IAction<T> extends Action<T> {
   type: string;
-  payload: T;
+  payload: T & MIDDLEWARE_PAYLOAD;
   error?: boolean;
   meta?: any;
-  userId?: string;
-  now?: number;
 }
 
-// Reducer
+// *Reducer
 export default handleActions<BoardState, any>({
   [INIT_BOARD]: (state, action: IAction<INIT_BOARD_PAYLOAD>) => {
     const towers = mapInfos.map1.towers;
@@ -67,7 +65,7 @@ export default handleActions<BoardState, any>({
   [SELECT_ATTACK_FROM_TOWER]: (state, action: IAction<SELECT_ATTACK_FROM_TOWER_PAYLOAD>) => {
     const fromTowerId = action.payload.towerId;
     const fromTower = state.getIn(['towers', 'byId', fromTowerId]);
-    if (!isTowerOwner(fromTower, action.userId!)) {
+    if (!isTowerOwner(fromTower, action.payload.userId)) {
       return state.deleteIn(['selected', 'from']);
     }
 
@@ -91,7 +89,7 @@ export default handleActions<BoardState, any>({
     }
 
     const attack = {
-      ownerId: action.userId!,
+      ownerId: action.payload.userId,
       amount: Math.floor(fromTower.get('amount') * attackPercentage),
       from: {
         towerId: fromTowerId,
@@ -103,9 +101,9 @@ export default handleActions<BoardState, any>({
         top: toTower.getIn(['style', 'top']),
         left: toTower.getIn(['style', 'left']),
       },
-      createdAt: action.now!,
-      updatedAt: action.now!,
-      marineCreatedAt: action.now!,
+      createdAt: action.payload.now,
+      updatedAt: action.payload.now,
+      marineCreatedAt: action.payload.now,
     };
     return state
       .set('selected', Map({ percentage: 1.0 }))
@@ -115,7 +113,7 @@ export default handleActions<BoardState, any>({
   [UPGRADE_TOWER]: (state, action: IAction<UPGRADE_TOWER_PAYLOAD>) => {
     const towerId = action.payload.towerId;
     const tower = state.getIn(['towers', 'byId', towerId]);
-    if (!isTowerOwner(tower, action.userId!)) {
+    if (!isTowerOwner(tower, action.payload.userId)) {
       return state;
     }
 
@@ -128,12 +126,12 @@ export default handleActions<BoardState, any>({
     return state.withMutations((map: BoardState) => {
       towerIds.forEach((towerId: string) => {
         map.updateIn(['towers', 'byId', towerId],
-          (ele: Tower) => ele.updateAmount(action.now!));
+          (ele: Tower) => ele.updateAmount(action.payload.now));
       });
     });
   },
   [MOVE_MARINE]: (state, action: IAction<MOVE_MARINE_PAYLOAD>) => {
-    const now = action.now!;
+    const now = action.payload.now;
     const marineIds = state.getIn(['marines', 'ids']);
 
     // no mutation cause of lock
@@ -165,7 +163,7 @@ export default handleActions<BoardState, any>({
         newState = newState
           .setIn(['towers', 'byId', toTowerId, 'ownerId'], newOwnerId)
           .updateIn(['towers', 'byId', toTowerId],
-            (tower: Tower) => tower.setRealAmount(newRealAmount, action.now!))
+            (tower: Tower) => tower.setRealAmount(newRealAmount, action.payload.now))
           .update('marines',
             (marines) => marines.remove(marineId));
       }
@@ -184,7 +182,7 @@ export default handleActions<BoardState, any>({
         const marineAmount = Math.min(MAX_ATTACK_SIZE, attackAmount, towerAmount);
 
         // get marine list from attack
-        const marines = attack.getNewMarines(marineAmount, action.now!);
+        const marines = attack.getNewMarines(marineAmount, action.payload.now);
 
         if (marines && marines.length !== 0) {
           let marineCreatedAt = 0;
@@ -197,11 +195,11 @@ export default handleActions<BoardState, any>({
           // subtract from attackAmount & set last marine created time
           map.updateIn(['attacks', 'byId', attackId],
             (ele: Attack) => ele
-              .subAmount(marines.length, action.now!)
+              .subAmount(marines.length, action.payload.now)
               .set('marineCreatedAt', marineCreatedAt));
           // subtract from towerAmount
           map.updateIn(['towers', 'byId', fromTowerId],
-            (tower: Tower) => tower.subAmount(marines.length, action.now!));
+            (tower: Tower) => tower.subAmount(marines.length, action.payload.now));
           // if attack is finished, delete it
           if (map.getIn(['attacks', 'byId', attackId, 'amount']) === 0) {
             map.update('attacks',
@@ -213,7 +211,7 @@ export default handleActions<BoardState, any>({
   },
 }, new BoardState());
 
-// Action Creators
+// *Action Creators
 export const actionCreators = {
   initBoard: createAction<INIT_BOARD_PAYLOAD>(INIT_BOARD),
   selectAttackFromTower: createAction<SELECT_ATTACK_FROM_TOWER_PAYLOAD>(SELECT_ATTACK_FROM_TOWER),

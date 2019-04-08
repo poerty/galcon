@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { actionCreators as boardActions } from 'modules/board';
+import { GalconAppState } from 'modules';
 
 interface TowerProps {
   id: string;
@@ -74,7 +75,7 @@ class Tower extends Component<TowerProps> {
   }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: GalconAppState, ownProps: any) => {
   return {
     userId: state.users.get('id'),
 

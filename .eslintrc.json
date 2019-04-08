@@ -170,6 +170,33 @@
     ],
     "@typescript-eslint/no-non-null-assertion": [
       false
+    ],
+    "@typescript-eslint/class-name-casing": [
+      false
+    ],
+    "@typescript-eslint/no-empty-interface": [
+      false
+    ],
+    "@typescript-eslint/member-ordering": [
+      true
+    ],
+    "@typescript-eslint/no-type-alias": [
+      true,
+      {
+        "allowAliases": "in-unions-and-intersections"
+      }
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      true
+    ],
+    "@typescript-eslint/promise-function-async": [
+      true
+    ],
+    "@typescript-eslint/restrict-plus-operands": [
+      true
+    ],
+    "@typescript-eslint/prefer-function-type": [
+      true
     ]
   }
 }

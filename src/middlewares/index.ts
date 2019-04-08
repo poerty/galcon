@@ -1,7 +1,10 @@
 function addUserId({ getState }: { getState: () => any }) {
   return (next: (action: any) => any) => (action: any) => {
+    if(!action.payload){
+      action.payload={};
+    }
     // add userId to all action
-    action.userId = getState().users.get('id');
+    action.payload.userId = getState().users.get('id');
     const returnValue = next(action);
     return returnValue;
   };
@@ -9,9 +12,12 @@ function addUserId({ getState }: { getState: () => any }) {
 
 function addTimeStamp() {
   return (next: (action: any) => any) => (action: any) => {
+    if(!action.payload){
+      action.payload={};
+    }
     // add timestamp:now to all action
-    if (!action.now) {
-      action.now = Math.floor((new Date()).getTime());
+    if (!action.payload.now) {
+      action.payload.now = Math.floor((new Date()).getTime());
     }
     const returnValue = next(action);
     return returnValue;

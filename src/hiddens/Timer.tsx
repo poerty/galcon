@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import { actionCreators as boardActions } from 'modules/board';
 import { actionCreators as timerActions } from 'modules/timer';
+import { GalconAppState } from 'modules';
 
 interface TimerProps {
   BoardActions: typeof boardActions;
@@ -20,7 +21,7 @@ class Timer extends Component<TimerProps> {
 
     const now = Math.floor((new Date()).getTime());
     BoardActions.initBoard({ now });
-    TimerActions.initTimer(now);
+    TimerActions.initTimer({now});
 
     // start requestAnimationFrame
     tick(() => {
@@ -35,7 +36,7 @@ class Timer extends Component<TimerProps> {
   }
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: GalconAppState) => {
   return {
     timer: state.timer,
   };

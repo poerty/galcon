@@ -1,23 +1,20 @@
-import { Map } from 'immutable';
 import { createAction, handleActions, Action } from 'redux-actions';
 
-// Actions
+// *Actions
 const INIT_TIMER = 'galcon/INIT_TIMER';
-// Actions payload type
-type INIT_TIMER_PAYLOAD = number;
+// *Actions payload type
+type INIT_TIMER_PAYLOAD = {now: number};
 
-// Reducer initialState
-const initialState = Map({
-  startedAt: 0,
-});
-// Reducer
-export default handleActions<any, any>({
+import TimerState from 'modules/timer.state';
+
+// *Reducer
+export default handleActions<TimerState, any>({
   [INIT_TIMER]: (state, action: Action<INIT_TIMER_PAYLOAD>) => {
-    return state.set('startedAt', action.payload);
+    return state.set('startedAt', action.payload.now);
   },
-}, initialState);
+}, new TimerState());
 
-// Action Creators
+// *Action Creators
 export const actionCreators = {
   initTimer: createAction<INIT_TIMER_PAYLOAD>(INIT_TIMER),
 };

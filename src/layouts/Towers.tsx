@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { List } from 'immutable';
 
 import Tower from 'components/Tower';
+import { GalconAppState } from 'modules';
 
 interface TowersProp {
   towerIds: List<any>;
@@ -29,7 +30,7 @@ class Towers extends Component<TowersProp> {
   }
 }
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = (state: GalconAppState) => ({
   towerIds: state.board.getIn(['towers', 'ids']),
 });
 

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List, Map } from 'immutable';
+
 import { clear, drawPoints, fixCanvasPixel } from 'functions/canvas';
+import {GalconAppState} from 'modules';
 
 interface CanvasProps {
   marineIds: List<any>;
@@ -64,7 +66,7 @@ class Canvas extends Component<CanvasProps> {
   }
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: GalconAppState) => {
   return {
     marineIds: state.board.getIn(['marines', 'ids']),
     marines: state.board.getIn(['marines', 'byId']),

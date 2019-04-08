@@ -2,15 +2,14 @@
 import mapInfos from 'datas/map';
 import { handleActions } from 'redux-actions';
 
-// Actions
-// Actions payload type
+import UserState from 'modules/user.state';
 
-// Reducer initialState
-const initialState = mapInfos.map1.users
-  .set('id', mapInfos.map1.users.getIn(['ids', 0]));
-// Reducer
+// *Actions
+// *Actions payload type
+
+// *Reducer
 export default handleActions({
 
-}, initialState);
+}, (new UserState()).set('id',mapInfos.map1.users.getIn(['ids',0])));
 
-// Action Creators
+// *Action Creators
