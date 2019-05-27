@@ -206,6 +206,10 @@ export default handleActions<BoardState, any>({
               (attacks) => attacks.remove(attackId));
           }
         }
+        if (marineAmount < attackAmount && marineAmount < MAX_ATTACK_SIZE) {
+          map.update('attacks',
+            attacks => attacks.remove(attackId));
+        }
       });
     });
   },
